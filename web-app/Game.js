@@ -31,10 +31,72 @@ function createEmptyGrid() {
   );
 }
 
-// export function 
+function generateHeights(grid) {
+  for (let x = 0; x < gridWidth; x += 1) {
+    // first row
+    grid[x][0].height = Math.floor(randomInt(0, 2));
+
+    // rest of column
+    for (let z = 1; z < gridDepth; z += 1) { // i started the last one at 0, which can ask for -1
+      const prevHeight = grid[x][z - 1].height; //now storing seperate for safety
+
+      // ensure it doesn't go down
+      grid[x][z].height = randomInt(prevHeight, prevHeight + 2);
+    }
+  }
+}
+
+
+function isSameTile(a, b) { // previously this came up a lot and led to a lot of unreadable gibberish
+  return a[0] === b[0] && a[1] === b[1]; // apparently comparing arrays sucks.
+}
+
+function isTaken(taken, tile) { 
+  return taken.some(t => isSameTile(t, tile)); // idk what this is... will go back to 
+}
+
+function placePlayers(grid) {
+  const taken = [];
+
+  function randomTile() {
+    return [
+      randomInt(0, gridWidth - 1),
+      randomInt(0, gridDepth - 1)
+    ];
+  }
+
+  function placeTeam(team) {
+    let count = 0;
+
+    while (count < 3) {
+      const tile = randomTile();
+
+      if (!isTaken(taken, tile)) {
+        const [x, z] = tile;
+
+        grid[x][z].occupant = { // using object instead, adding these to the occupant
+          team,
+          hasRock: true
+        };
+
+        taken.push(tile);
+        count++;
+      }
+    }
+  }
+
+  placeTeam("red");
+  placeTeam("blue");
+}
+
+
 export function initGame() {
+  const grid = createEmptyGrid();
+  generateHeights(grid);
+  placePlayers(grid);
+
   return {
-    grid: createEmptyGrid(),
+    grid,
     currentPlayer: "red",
     selected: null
   };
