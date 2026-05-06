@@ -55,6 +55,8 @@ function isTaken(taken, tile) {
   return taken.some(t => isSameTile(t, tile)); // idk what this is... will go back to 
 }
 
+// FIRST SIX DAYS BEFORE GAMER TIME
+
 function placePlayers(grid) {
   const taken = [];
 
@@ -90,6 +92,8 @@ function placePlayers(grid) {
 }
 
 
+// API functions
+
 export function initGame() {
   const grid = createEmptyGrid();
   generateHeights(grid);
@@ -101,3 +105,19 @@ export function initGame() {
     selected: null
   };
 }
+
+
+// Query functions: this is how the frontend can ask about the game state! this is very cool
+
+export function getTile(game, x, z) {
+  if (!game.grid[x] || !game.grid[x][z]) { // this is a function to save all the error checks
+    // that i was having to do before
+    return null;
+  }
+  return game.grid[x][z];
+}
+
+export function getCurrentPlayer(game) {
+  return game.currentPlayer;
+}
+
