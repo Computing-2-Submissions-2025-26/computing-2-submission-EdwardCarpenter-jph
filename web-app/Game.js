@@ -7,6 +7,10 @@ issues with ideas in main:
     though we've been told the front end is what we're judged on.
 */
 
+// big change i need to keep in mind: "game" is now used to save the gamestate
+// wheras before i had a bunch of different arrays! this was bad.
+
+
 // separating these into 2 bits, since the alternative was confusing later on
 const gridWidth = 12;
 const gridDepth = 4;
@@ -52,7 +56,9 @@ function isSameTile(a, b) { // previously this came up a lot and led to a lot of
 }
 
 function isTaken(taken, tile) { 
-  return taken.some(t => isSameTile(t, tile)); // idk what this is... will go back to 
+  return taken.some(t => isSameTile(t, tile)); // .some checks an array to see if *any*
+  // elements pass the condition
+  // this is an arrow function using t as an argument.
 }
 
 // FIRST SIX DAYS BEFORE GAMER TIME
@@ -121,3 +127,42 @@ export function getCurrentPlayer(game) {
   return game.currentPlayer;
 }
 
+// Selection
+
+export function selectTile(game, x, z) { // unlike my original, this returns a *new* game state
+  const tile = getTile(game, x, z); // rather than overwriting the last one, better for debugging
+
+  if (!tile || !tile.occupant) return game;
+
+  if (tile.occupant.team !== game.currentPlayer) return game;
+
+  return {
+    ...game,
+    selected: [x, z]
+  };
+}
+
+// movement logic
+
+// any character can move to an adjacent tile with a +1 to -2 height difference
+// a character with no rock can move to an adjacent tile with a +3 to -2 height difference
+// a character with a rock can drop the rock onto an adjacent tile:
+// - that tile will now have a rock on it
+// - that character will now have no rock
+// - if that tile had a character on it, that character is now dead and removed from the game
+// if a character moves to a tile with a rock on it, the character will pick up the rock
+
+// functions for movement
+
+function isAdjacent(a, b) { // two coordinates, will be each tile's [x, z]
+  const dx = Math.abs(a[0] - b[0]); // are they adjacent in x/y?
+  const dz = Math.abs(a[1] - b[1]); // if so, only one of dx or dy can be 1
+  return dx + dz === 1; // if this was 2, they'd be diagonal.
+}
+
+function heightDiff(game, from, to) {
+  const a = getTile(game, ...from); // "..." is spread syntax, allowing importation
+  const b = getTile(game, ...to); // of the whole array, more reliable than manual indexing
+  // this function finds the coordinates, safety checks them and returns the difference
+  return b.height - a.height; // in the height property.
+}
