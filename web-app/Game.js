@@ -84,6 +84,7 @@ function placePlayers(grid) {
 
         grid[x][z].occupant = { // using object instead, adding these to the occupant
           team,
+          type: "character", // can be character or rock
           hasRock: true
         };
 
@@ -132,9 +133,9 @@ export function getCurrentPlayer(game) {
 export function selectTile(game, x, z) { // unlike my original, this returns a *new* game state
   const tile = getTile(game, x, z); // rather than overwriting the last one, better for debugging
 
-  if (!tile || !tile.occupant) return game;
+  if (!tile || !tile.occupant) return game; // if the tile doesn't exist or has no occupant, return the game state unchanged
 
-  if (tile.occupant.team !== game.currentPlayer) return game;
+  if (tile.occupant.team !== game.currentPlayer) return game; // if the tile's occupant isn't on the current player's team, return the game state unchanged
 
   return {
     ...game,
@@ -165,4 +166,167 @@ function heightDiff(game, from, to) {
   const b = getTile(game, ...to); // of the whole array, more reliable than manual indexing
   // this function finds the coordinates, safety checks them and returns the difference
   return b.height - a.height; // in the height property.
+}
+
+function isPlayer(occupant) {
+  return occupant && occupant.type === "character"; // checks the occupant exists and is a character
+}
+
+function isRock(occupant) {
+  return occupant && occupant.type === "rock"; // checks the occupant exists and is a rock
+}
+
+// movement validation
+
+// - if the selected character has a rock:
+//      can move to an adjacent tile with a height difference of +1 to -2
+//      can drop their rock onto an adjacent tile if it has another character on it OR is lower than -2 and has no rock on it
+//          the character now should not have a rock, but not move.
+//          the tile now should have a rock on it, and no character on it.
+// - if the selected character has no rock:
+//      can move to an adjacent tile with a height difference of +3 to -2
+//      if they're moving onto a tile with a rock on it, they will now have a rock.
+
+// check if *Can't Move* first
+
+function cannotWalkTo(game, target) {
+  // no selected tile means no movement
+  if (!game.selected) { // therefore if there's no selected tile as a property of the game state,
+    console.log("Error! no tile selected.");
+    return true; // then clearly the player can't move to it, hence "true". this shouldn't come up
+    
+  }
+
+  // movement must be to an adjacent tile
+  if (!isAdjacent(game.selected, target)) {
+    console.log("Error! target tile is not adjacent."); // i shouldn't be able to select this on the front end though.    
+    return true;
+  }
+
+  const fromTile = getTile(game, ...game.selected);
+  const targetTile = getTile(game, ...target);
+
+  // safety check in case target doesn't exist!
+  if (!targetTile) { // this might happen if the tile is out of bounds.
+    console.log("Error! target tile does not exist.");
+    return true; // if this fails then that's a problem
+  }
+
+  const mover = fromTile.occupant;
+  const targetOccupant = targetTile.occupant;
+
+  // cannot move onto another character
+  if (isPlayer(targetOccupant)) {
+    return true;
+  } // note: is true, but *something* happens in this case: this comes up in splatting
+
+  // cannot move onto a rock if already holding one
+  if (isRock(targetOccupant) && mover.hasRock) {
+    return true;
+  }
+
+  const diff = heightDiff(game, game.selected, target);
+
+  // cannot move down more than 2
+  if (diff < -2) {
+    return true;
+  } // again this is true. however, this function needs to account for splatting.
+  
+  if (mover.hasRock) {// character with rock can only climb 1
+    if (diff > 1) {
+      return true;
+    }
+  } else {
+    if (diff > 3) {// character without rock can climb 3
+      return true;
+    }}
+
+  // otherwise movement is valid
+  return false;
+};
+
+
+
+//check if rocks can be dropped to this tile
+function cannotDropRockTo(game, target) {
+  if (!game.selected) { // game is real?
+    console.log("Error! rock function thinks the game state isn't real.")
+    return true;
+  }
+
+  if (!isAdjacent(game.selected, target)) { // see above
+    return true;
+  }
+
+  const fromTile = getTile(game, ...game.selected);
+  const targetTile = getTile(game, ...target);
+
+  const mover = fromTile.occupant;
+
+  // must have rock. can't go around dropping rocks from nowhere
+  // the goons are not roxy lalonde
+  if (!mover.hasRock) {
+    return true;
+  }
+
+  const diff = heightDiff(game, game.selected, target);
+
+  const targetOccupant = targetTile.occupant;
+
+  // case 1:
+  // splatting another character
+  if (isPlayer(targetOccupant)) {
+    return diff > 0;
+  }
+
+  // case 2:
+  // dropping rock downward
+  console.log("Error: thought about dropping a rock on a tile that is movement valid! logic issue somewhere.")
+
+  return diff >= -2;
+}
+
+// function to drop rocks on someone/no-one
+// if you have a rock (implicit?)
+// -> the selected tile is now a rock
+// -> you no longer have a rock
+// BONUS: if the selected tile was a character, play a splat sound. otherwise, play a clang sound.
+
+function dropRockTo(game, target) {
+  const fromTile = getTile(game, ...game.selected);
+  const targetTile = getTile(game, ...target);
+
+  if (!fromTile.occupant.hasRock) {
+    console.log("attempting to drop rock that does not exist!");
+  } else if (!isPlayer(fromTile.occupant)) {
+    console.log("non-character trying to drop a rock!");
+  }
+
+  if (isPlayer(targetTile.occupant)) {
+    console.log("Splat! this is where a splat sound might play.");
+  } else {
+    console.log("Clang! this is where a clang sound might play.");
+  }
+
+  // character no longer has a rock
+  fromTile.occupant.hasRock = false;
+
+  // tile is now occupied by a rock
+  targetTile.occupant = {
+    type: "rock"
+  };
+
+  return(game); // not ending turn inside here!
+}
+
+// function to end turn, clear selection and swap team. want to use in later logic, not inside statements.
+function endTurn(game) {
+  // Use a ternary operator for a cleaner team swap
+  const nextTeam = game.currentPlayer === "red" ? "blue" : "red";
+
+  return {
+    ...game,
+    selected: null,
+    currentPlayer: nextTeam
+  };
 }
