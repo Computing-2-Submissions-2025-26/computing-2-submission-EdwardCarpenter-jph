@@ -331,6 +331,9 @@ function endTurn(game) {
   };
 }
 
+// AI code from this point: need to go through this.
+
+
 // ========================================
 // ACTION HELPERS
 // ========================================
@@ -434,7 +437,6 @@ function applyDropRock(game, target) {
   return endTurn(newGame);
 }
 
-// AI code from this point: need to go through this.
  
 // ========================================
 // SELF SPLAT ACTION
