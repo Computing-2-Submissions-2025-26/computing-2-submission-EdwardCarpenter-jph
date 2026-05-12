@@ -330,3 +330,208 @@ function endTurn(game) {
     currentPlayer: nextTeam
   };
 }
+
+// ========================================
+// ACTION HELPERS
+// ========================================
+
+function cloneGame(game) {
+  // temporary shallow clone
+  // later you can replace with proper immutable cloning
+  return {
+    ...game
+  };
+}
+
+function removeOccupant(tile) {
+  tile.occupant = null;
+}
+
+function placeRock(tile) {
+  tile.occupant = {
+    type: "rock"
+  };
+}
+
+function moveOccupant(fromTile, toTile) {
+  toTile.occupant = fromTile.occupant;
+  fromTile.occupant = null;
+}
+
+function checkWinner(game) {
+  let redAlive = false;
+  let blueAlive = false;
+
+  for (let x = 0; x < gridWidth; x++) {
+    for (let z = 0; z < gridDepth; z++) {
+      const occ = game.grid[x][z].occupant;
+
+      if (isPlayer(occ)) {
+        if (occ.team === "red") {
+          redAlive = true;
+        }
+
+        if (occ.team === "blue") {
+          blueAlive = true;
+        }
+      }
+    }
+  }
+
+  if (!redAlive) return "blue";
+  if (!blueAlive) return "red";
+
+  return null;
+}
+
+
+// ========================================
+// MOVE ACTION
+// ========================================
+
+function applyMove(game, target) {
+  const newGame = cloneGame(game);
+
+  const fromTile = getTile(newGame, ...newGame.selected);
+  const targetTile = getTile(newGame, ...target);
+
+  const mover = fromTile.occupant;
+
+  // pick up rock if present
+  if (isRock(targetTile.occupant)) {
+    mover.hasRock = true;
+  }
+
+  moveOccupant(fromTile, targetTile);
+
+  return endTurn(newGame);
+}
+
+
+// ========================================
+// DROP ROCK ACTION
+// ========================================
+
+function applyDropRock(game, target) {
+  const newGame = cloneGame(game);
+
+  const fromTile = getTile(newGame, ...newGame.selected);
+  const targetTile = getTile(newGame, ...target);
+
+  const mover = fromTile.occupant;
+
+  // remove rock from mover
+  mover.hasRock = false;
+
+  // splat character if present
+  if (isPlayer(targetTile.occupant)) {
+    console.log("Splat!");
+  }
+
+  // place rock on target
+  placeRock(targetTile);
+
+  return endTurn(newGame);
+}
+
+// AI code from this point: need to go through this.
+ 
+// ========================================
+// SELF SPLAT ACTION
+// ========================================
+
+function applySelfSplat(game, target) {
+  const newGame = cloneGame(game);
+
+  const fromTile = getTile(newGame, ...newGame.selected);
+  const targetTile = getTile(newGame, ...target);
+
+  // remove target occupant too
+  if (targetTile.occupant) {
+    removeOccupant(targetTile);
+  }
+
+  // remove self
+  removeOccupant(fromTile);
+
+  console.log("Self splat!");
+
+  return endTurn(newGame);
+}
+
+
+// ========================================
+// MAIN ACTION RESOLVER
+// ========================================
+
+export function performAction(game, target) {
+
+  // no selected tile
+  if (!game.selected) {
+    return game;
+  }
+
+  const fromTile = getTile(game, ...game.selected);
+
+  if (!fromTile || !isPlayer(fromTile.occupant)) {
+    return game;
+  }
+
+  const mover = fromTile.occupant;
+
+  const diff = heightDiff(game, game.selected, target);
+
+  // ----------------------------------------
+  // WALK
+  // ----------------------------------------
+
+  if (!cannotWalkTo(game, target)) {
+
+    const result = applyMove(game, target);
+
+    const winner = checkWinner(result);
+
+    if (winner) {
+      result.winner = winner;
+    }
+
+    return result;
+  }
+
+  // ----------------------------------------
+  // DROP ROCK
+  // ----------------------------------------
+
+  if (!cannotDropRockTo(game, target)) {
+
+    const result = applyDropRock(game, target);
+
+    const winner = checkWinner(result);
+
+    if (winner) {
+      result.winner = winner;
+    }
+
+    return result;
+  }
+
+  // ----------------------------------------
+  // SELF SPLAT
+  // ----------------------------------------
+
+  if (!mover.hasRock && diff < -2) {
+
+    const result = applySelfSplat(game, target);
+
+    const winner = checkWinner(result);
+
+    if (winner) {
+      result.winner = winner;
+    }
+
+    return result;
+  }
+
+  // invalid action
+  return game;
+}
