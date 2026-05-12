@@ -1,5 +1,7 @@
 // tests
 
+// note: throughout my code i often refer to the "weight" as the "rock"; this is because of a pivot to gangsters from cavemen, which is a purely aesthetic change.
+
 // functions to import
 import { describe, it, expect } from "vitest";
 
@@ -75,4 +77,20 @@ describe("Selection", () => {
 
 });
 
-// 
+// Movement Tests: movement not yet implemented, but I'll want to test:
+
+// - can the player move to tile they should be able to?
+//      can the player move to an adjacent tile of the same height?
+//      can the player move to an adjacent tile that is one higher?
+//      can the player move to an adjacent tile that is one lower?
+
+// - can the player *not* move to a tile they shouldn't be able to? ALL FALSE?
+//      can a player with a rock move to a tile that is more than one higher?
+//      can a player with no rock move to a tile that is more than three higher?
+//      can a player move to a non-adjacent tile? 
+
+// Rock and Splat Tests: this is kind of part of movement, but i'm still separating it.
+// - can the player die by moving to a tile that is more than two lower than their current tile? TRUE?
+// - if the player drops their rock onto a tile, does that tile now have a rock on it AND the player not have a rock? TRUE?
+// - if the player drops their rock on another character, will that character be replaced by a rock and the player lose their rock? TRUE?
+// - can the player drop a rock onto a tile that already has a rock on it? FALSE?
