@@ -190,6 +190,11 @@ function heightDiff(game, from, to) {
     const a = getTile(game, ...from); // remember ... lets me get both coordinates
     const b = getTile(game, ...to);
 
+    if ((a === null) || (b === null)) {
+        console.log("Error: tile in heightDiff could not be obtained")
+        return(0);
+    };
+
     return b.height - a.height;
 }
 
@@ -302,14 +307,20 @@ function cannotDropRockTo(game, target) {
     rock drop validation
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
-function cloneGame(game) { // ai suggestion to prevent mutation of the grid.
+function cloneGame(game) { // this function has been completely replaced by chatgpt
+    return { // advice against mutating the grid was originally also reccomended by an LLM
+        ...game,
 
-  // temporary shallow clone
-  // later this can become fully immutable
+        grid: game.grid.map(column =>
+            column.map(tile => ({
+                ...tile,
 
-  return {
-    ...game
-  };
+                occupant: tile.occupant
+                    ? {...tile.occupant}
+                    : null
+            }))
+        )
+    };
 }
 
 function endTurn(game) {
@@ -388,7 +399,7 @@ function actionDropRock(game, target) {
     return endTurn(newGame);
 }
 
-function applySelfSplat(game, target) {
+function actionSelfSplat(game, target) {
     // if this is annoying me i will simply remove it
     // likely to be buggy for no reason.
     const newGame = cloneGame(game);
@@ -414,11 +425,15 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 export function performAction(game, target) {
 
   // no selected tile
-    if (!game.selected) {return game;}
+    if (!game.selected) {
+        console.log(game)
+        return game;}
 
     const fromTile = getTile(game, ...game.selected);
 
-    if (!fromTile || !isPlayer(fromTile.occupant)) {return game;}
+    if (!fromTile || !isPlayer(fromTile.occupant)) {
+        console.log(game)
+        return game;}
 
     const mover = fromTile.occupant;
     const diff = heightDiff(game, game.selected, target);
@@ -426,34 +441,38 @@ export function performAction(game, target) {
     // WALK
 
     if (!cannotWalkTo(game, target)) {
-        const result = applyMove(game, target);
+        const result = actionMove(game, target);
         const winner = checkWinner(result);
 
         if (winner) {result.winner = winner;}
-        return result;}
+    console.log(result)
+    return result;}
 
     // DROP ROCK
 
     if (!cannotDropRockTo(game, target)) {
-        const result = applyDropRock(game, target);
+        const result = actionDropRock(game, target);
         const winner = checkWinner(result);
 
-        if (winner) {
-            result.winner = winner;}
+        if (winner) {result.winner = winner;}
+    console.log(result)
     return result;}
 
   // DROP, NO ROCK
 
     if (!mover.hasRock && diff < -2) { // exception case to not being able to move or drop rock
 
-        const result = applySelfSplat(game, target);
+        const result = actionSelfSplat(game, target);
         const winner = checkWinner(result);
 
         if (winner) {
             result.winner = winner;}
 
+        console.log(result)
         return result;}
 
   // invalid action
+  console.log(game)
+  console.log("Invalid Action Attempted")
   return game;
 }

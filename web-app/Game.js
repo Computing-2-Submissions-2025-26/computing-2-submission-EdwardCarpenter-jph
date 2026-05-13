@@ -1,539 +1,478 @@
 // game.js
-/* 
+
+/*
 issues with ideas in main:
-- rendering logic is supposed to go on the other side. 
+- rendering logic is supposed to go on the other side.
     for simplicity, this is just going to be game logic
 - game must be a data structure for marks (?)
     though we've been told the front end is what we're judged on.
 */
 
-// big change i need to keep in mind: "game" is now used to save the gamestate
-// wheras before i had a bunch of different arrays! this was bad.
+// big change i need to keep in mind:
+// "game" is now used to save the gamestate
+// whereas before i had a bunch of different arrays! this was bad.
 
 
-// separating these into 2 bits, since the alternative was confusing later on
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        set up grid with constants
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+// separated  into 2 bits, since the alternative was confusing later on
 const gridWidth = 12;
 const gridDepth = 4;
 
-function randomInt(min, max) { // simplifies random generation in a way i get more intuitively
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        general helpers
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+function randomInt(min, max) { // makes random into a more intuitive format
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// making tiles one by one rather than in bulk
+function isSameTile(a, b) { // can't just do array === array because javascript is cringe
+    return a[0] === b[0] && a[1] === b[1];
+}
+
+function isTaken(taken, tile) { // .some checks an array to see if *any*
+    // elements pass the condition
+    // this is an arrow function using t as an argument.
+    return taken.some(t => isSameTile(t, tile));
+}
+
+function isAdjacent(a, b) {
+    // checks on x and z. could expand this bit later, note to self
+    const dx = Math.abs(a[0] - b[0]);
+    const dz = Math.abs(a[1] - b[1]);
+
+    return dx + dz === 1;
+}
+
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        tile specific helpers
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
 function createTile() {
-  return {
+    // create a blank tile with no height and null as the occupant
+    return {
     height: 0,
-    occupant: null // may later become { team: "red"/"blue", hasRock: true/false }
-  };
-}
-
-// this function is a suggested improvement from openAI's chatGPT
-// this is *much* simpler than my iterative approach.
-function createEmptyGrid() {
-  return Array.from({ length: gridWidth }, () =>
-    Array.from({ length: gridDepth }, () => createTile())
-  );
-}
-
-function generateHeights(grid) {
-  for (let x = 0; x < gridWidth; x += 1) {
-    // first row
-    grid[x][0].height = Math.floor(randomInt(0, 2));
-
-    // rest of column
-    for (let z = 1; z < gridDepth; z += 1) { // i started the last one at 0, which can ask for -1
-      const prevHeight = grid[x][z - 1].height; //now storing seperate for safety
-
-      // ensure it doesn't go down
-      grid[x][z].height = randomInt(prevHeight, prevHeight + 2);
-    }
-  }
-}
-
-
-function isSameTile(a, b) { // previously this came up a lot and led to a lot of unreadable gibberish
-  return a[0] === b[0] && a[1] === b[1]; // apparently comparing arrays sucks.
-}
-
-function isTaken(taken, tile) { 
-  return taken.some(t => isSameTile(t, tile)); // .some checks an array to see if *any*
-  // elements pass the condition
-  // this is an arrow function using t as an argument.
-}
-
-// FIRST SIX DAYS BEFORE GAMER TIME
-
-function placePlayers(grid) {
-  const taken = [];
-
-  function randomTile() {
-    return [
-      randomInt(0, gridWidth - 1),
-      randomInt(0, gridDepth - 1)
-    ];
-  }
-
-  function placeTeam(team) {
-    let count = 0;
-
-    while (count < 3) {
-      const tile = randomTile();
-
-      if (!isTaken(taken, tile)) {
-        const [x, z] = tile;
-
-        grid[x][z].occupant = { // using object instead, adding these to the occupant
-          team,
-          type: "character", // can be character or rock
-          hasRock: true
-        };
-
-        taken.push(tile);
-        count++;
-      }
-    }
-  }
-
-  placeTeam("red");
-  placeTeam("blue");
-}
-
-
-// API functions
-
-export function initGame() {
-  const grid = createEmptyGrid();
-  generateHeights(grid);
-  placePlayers(grid);
-
-  return {
-    grid,
-    currentPlayer: "red",
-    selected: null
+    occupant: null // may later become { team: "red"/"blue", hasRock: true/false }. null is treated as "empty"
   };
 }
 
 
-// Query functions: this is how the frontend can ask about the game state! this is very cool
-
-export function getTile(game, x, z) {
-  if (!game.grid[x] || !game.grid[x][z]) { // this is a function to save all the error checks
-    // that i was having to do before
-    return null;
-  }
-  return game.grid[x][z];
-}
-
-export function getCurrentPlayer(game) {
-  return game.currentPlayer;
-}
-
-// Selection
-
-export function selectTile(game, x, z) { // unlike my original, this returns a *new* game state
-  const tile = getTile(game, x, z); // rather than overwriting the last one, better for debugging
-
-  if (!tile || !tile.occupant) return game; // if the tile doesn't exist or has no occupant, return the game state unchanged
-
-  if (tile.occupant.team !== game.currentPlayer) return game; // if the tile's occupant isn't on the current player's team, return the game state unchanged
-
-  return {
-    ...game,
-    selected: [x, z]
-  };
-}
-
-// movement logic
-
-// any character can move to an adjacent tile with a +1 to -2 height difference
-// a character with no rock can move to an adjacent tile with a +3 to -2 height difference
-// a character with a rock can drop the rock onto an adjacent tile:
-// - that tile will now have a rock on it
-// - that character will now have no rock
-// - if that tile had a character on it, that character is now dead and removed from the game
-// if a character moves to a tile with a rock on it, the character will pick up the rock
-
-// functions for movement
-
-function isAdjacent(a, b) { // two coordinates, will be each tile's [x, z]
-  const dx = Math.abs(a[0] - b[0]); // are they adjacent in x/y?
-  const dz = Math.abs(a[1] - b[1]); // if so, only one of dx or dy can be 1
-  return dx + dz === 1; // if this was 2, they'd be diagonal.
-}
-
-function heightDiff(game, from, to) {
-  const a = getTile(game, ...from); // "..." is spread syntax, allowing importation
-  const b = getTile(game, ...to); // of the whole array, more reliable than manual indexing
-  // this function finds the coordinates, safety checks them and returns the difference
-  return b.height - a.height; // in the height property.
-}
-
+// checks if the occupant type is player
+// this is much more readable than the alternative
 function isPlayer(occupant) {
-  return occupant && occupant.type === "character"; // checks the occupant exists and is a character
+    return occupant && occupant.type === "character";
 }
-
 function isRock(occupant) {
-  return occupant && occupant.type === "rock"; // checks the occupant exists and is a rock
+    return occupant && occupant.type === "rock";
 }
 
-// movement validation
-
-// - if the selected character has a rock:
-//      can move to an adjacent tile with a height difference of +1 to -2
-//      can drop their rock onto an adjacent tile if it has another character on it OR is lower than -2 and has no rock on it
-//          the character now should not have a rock, but not move.
-//          the tile now should have a rock on it, and no character on it.
-// - if the selected character has no rock:
-//      can move to an adjacent tile with a height difference of +3 to -2
-//      if they're moving onto a tile with a rock on it, they will now have a rock.
-
-// check if *Can't Move* first
-
-function cannotWalkTo(game, target) {
-  // no selected tile means no movement
-  if (!game.selected) { // therefore if there's no selected tile as a property of the game state,
-    console.log("Error! no tile selected.");
-    return true; // then clearly the player can't move to it, hence "true". this shouldn't come up
-    
-  }
-
-  // movement must be to an adjacent tile
-  if (!isAdjacent(game.selected, target)) {
-    console.log("Error! target tile is not adjacent."); // i shouldn't be able to select this on the front end though.    
-    return true;
-  }
-
-  const fromTile = getTile(game, ...game.selected);
-  const targetTile = getTile(game, ...target);
-
-  // safety check in case target doesn't exist!
-  if (!targetTile) { // this might happen if the tile is out of bounds.
-    console.log("Error! target tile does not exist.");
-    return true; // if this fails then that's a problem
-  }
-
-  const mover = fromTile.occupant;
-  const targetOccupant = targetTile.occupant;
-
-  // cannot move onto another character
-  if (isPlayer(targetOccupant)) {
-    return true;
-  } // note: is true, but *something* happens in this case: this comes up in splatting
-
-  // cannot move onto a rock if already holding one
-  if (isRock(targetOccupant) && mover.hasRock) {
-    return true;
-  }
-
-  const diff = heightDiff(game, game.selected, target);
-
-  // cannot move down more than 2
-  if (diff < -2) {
-    return true;
-  } // again this is true. however, this function needs to account for splatting.
-  
-  if (mover.hasRock) {// character with rock can only climb 1
-    if (diff > 1) {
-      return true;
-    }
-  } else {
-    if (diff > 3) {// character without rock can climb 3
-      return true;
-    }}
-
-  // otherwise movement is valid
-  return false;
-};
-
-
-
-//check if rocks can be dropped to this tile
-function cannotDropRockTo(game, target) {
-  if (!game.selected) { // game is real?
-    console.log("Error! rock function thinks the game state isn't real.")
-    return true;
-  }
-
-  if (!isAdjacent(game.selected, target)) { // see above
-    return true;
-  }
-
-  const fromTile = getTile(game, ...game.selected);
-  const targetTile = getTile(game, ...target);
-
-  const mover = fromTile.occupant;
-
-  // must have rock. can't go around dropping rocks from nowhere
-  // the goons are not roxy lalonde
-  if (!mover.hasRock) {
-    return true;
-  }
-
-  const diff = heightDiff(game, game.selected, target);
-
-  const targetOccupant = targetTile.occupant;
-
-  // case 1:
-  // splatting another character
-  if (isPlayer(targetOccupant)) {
-    return diff > 0;
-  }
-
-  // case 2:
-  // dropping rock downward
-  console.log("Error: thought about dropping a rock on a tile that is movement valid! logic issue somewhere.")
-
-  return diff >= -2;
-}
-
-// function to drop rocks on someone/no-one
-// if you have a rock (implicit?)
-// -> the selected tile is now a rock
-// -> you no longer have a rock
-// BONUS: if the selected tile was a character, play a splat sound. otherwise, play a clang sound.
-
-function dropRockTo(game, target) {
-  const fromTile = getTile(game, ...game.selected);
-  const targetTile = getTile(game, ...target);
-
-  if (!fromTile.occupant.hasRock) {
-    console.log("attempting to drop rock that does not exist!");
-  } else if (!isPlayer(fromTile.occupant)) {
-    console.log("non-character trying to drop a rock!");
-  }
-
-  if (isPlayer(targetTile.occupant)) {
-    console.log("Splat! this is where a splat sound might play.");
-  } else {
-    console.log("Clang! this is where a clang sound might play.");
-  }
-
-  // character no longer has a rock
-  fromTile.occupant.hasRock = false;
-
-  // tile is now occupied by a rock
-  targetTile.occupant = {
-    type: "rock"
-  };
-
-  return(game); // not ending turn inside here!
-}
-
-// function to end turn, clear selection and swap team. want to use in later logic, not inside statements.
-function endTurn(game) {
-  // Use a ternary operator for a cleaner team swap
-  const nextTeam = game.currentPlayer === "red" ? "blue" : "red";
-
-  return {
-    ...game,
-    selected: null,
-    currentPlayer: nextTeam
-  };
-}
-
-// AI code from this point: need to go through this.
-
-
-// ========================================
-// ACTION HELPERS
-// ========================================
-
-function cloneGame(game) {
-  // temporary shallow clone
-  // later you can replace with proper immutable cloning
-  return {
-    ...game
-  };
-}
-
-function removeOccupant(tile) {
-  tile.occupant = null;
-}
+function removeOccupant(tile) { // this is something suggested by chatgpt.
+  tile.occupant = null; // allows for removing an occupant without mutating the array
+} // note: also removes rocks! don't forget that
 
 function placeRock(tile) {
-  tile.occupant = {
-    type: "rock"
+    tile.occupant = {
+        type: "rock"
   };
 }
 
-function moveOccupant(fromTile, toTile) {
+function moveOccupant(fromTile, toTile) { // this is another ai addition
   toTile.occupant = fromTile.occupant;
   fromTile.occupant = null;
 }
 
-function checkWinner(game) {
-  let redAlive = false;
-  let blueAlive = false;
 
-  for (let x = 0; x < gridWidth; x++) {
-    for (let z = 0; z < gridDepth; z++) {
-      const occ = game.grid[x][z].occupant;
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        grid generation
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
-      if (isPlayer(occ)) {
-        if (occ.team === "red") {
-          redAlive = true;
-        }
+function createEmptyGrid() { // this function mistakenly wasn't labelled as ai originally but it is
+    return Array.from({ length: gridWidth }, () => // i wrote a version of this before, but this does it in less space
+        Array.from({ length: gridDepth }, () => createTile())
+);
+}
 
-        if (occ.team === "blue") {
-          blueAlive = true;
-        }
-      }
+function generateHeights(grid) {
+    for (let x = 0; x < gridWidth; x += 1) {
+
+        // first row
+        grid[x][0].height = randomInt(0, 2);
+
+        // rest of column
+        for (let z = 1; z < gridDepth; z += 1) {
+
+            const prevHeight = grid[x][z - 1].height;
+
+            // ensure it doesn't go down (essential for visuals pass!)
+            grid[x][z].height = randomInt(prevHeight, prevHeight + 2);// floor at prev, goes up to 2
+        }// NOTE: change from 2 depending on how square the output is!
     }
-  }
+}
 
-  if (!redAlive) return "blue";
-  if (!blueAlive) return "red";
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        place players on grid
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+function placePlayers(grid) {
+
+    const taken = [];
+
+    function randomTile() {
+        return [
+            randomInt(0, gridWidth - 1),
+            randomInt(0, gridDepth - 1)
+        ];
+    }
+
+    function placeTeam(team) {
+
+        let count = 0;
+
+        while (count < 3) { // NOTE: THIS IS WHERE I WOULD CHANGE THE CHAR COUNT
+
+            const tile = randomTile();
+
+            if (!isTaken(taken, tile)) {
+
+                const [x, z] = tile;
+
+                grid[x][z].occupant = {team,type: "character",hasRock: true};
+                taken.push(tile);
+
+                count += 1;
+            }
+        }
+    }
+
+    placeTeam("red");
+    placeTeam("blue");
+}
+
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    initialise game (export functions)
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+export function initGame() {
+    const grid = createEmptyGrid();
+
+    generateHeights(grid);
+    placePlayers(grid);
+
+    return {grid,currentPlayer: "red",selected: null,winner: null};
+}
+
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    query functions for higher lv
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+export function getTile(game, x, z) {
+
+    if (!game.grid[x] || !game.grid[x][z]) { // inbuilt error catcher! makes sure the tile exists.
+        return null;
+    }
+    return game.grid[x][z];
+}
+
+export function getCurrentPlayer(game) {
+    return game.currentPlayer; // returns the property controlling the current player
+}
+
+function heightDiff(game, from, to) {
+// determine height difference
+    const a = getTile(game, ...from); // remember ... lets me get both coordinates
+    const b = getTile(game, ...to);
+
+    if ((a === null) || (b === null)) {
+        console.log("Error: tile in heightDiff could not be obtained")
+        return(0);
+    };
+
+    return b.height - a.height;
+}
+
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    selection
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+export function selectTile(game, x, z) {
+    // function makes sure the selection is an existing player 
+
+    const tile = getTile(game, x, z);
+
+    if (!tile || !tile.occupant) {return game;}
+    if (!isPlayer(tile.occupant)) {return game;}
+    if (tile.occupant.team !== game.currentPlayer) {return game;}
+
+    return {...game,selected: [x, z]};
+}
+
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    movement validation
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+// if selected character has a rock:
+// - can climb +1
+// - can descend -2
+//
+// if selected character has no rock:
+// - can climb +3
+// - can descend -2
+
+function cannotWalkTo(game, target) {
+
+    if (!game.selected) {
+        console.log("Error! no tile selected.");
+        return true;};
+
+    if (!isAdjacent(game.selected, target)) {
+        return true;}
+
+    const fromTile = getTile(game, ...game.selected);
+    const targetTile = getTile(game, ...target);
+
+    if (!targetTile) {
+        return true;};
+
+    const mover = fromTile.occupant;
+    const targetOccupant = targetTile.occupant;
+
+    // cannot move onto another character
+    if (isPlayer(targetOccupant)) {
+        return true;}
+
+    // cannot move onto a rock if already holding one
+    if (isRock(targetOccupant) && mover.hasRock) {
+        return true;};
+
+  const diff = heightDiff(game, game.selected, target);
+
+  // cannot move down more than 2
+  if (diff < -2) {return true;}
+
+  // climb restrictions
+    if (mover.hasRock) {
+
+        if (diff > 1) {return true;}
+    } else {
+
+        if (diff > 3) {return true;};
+    }
+    return false;
+}
+
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    rock drop validation
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+function cannotDropRockTo(game, target) {
+
+    if (!game.selected) {return true;};
+    if (!isAdjacent(game.selected, target)) {return true;}
+
+    const fromTile = getTile(game, ...game.selected);
+    const targetTile = getTile(game, ...target);
+
+    if (!targetTile) {return true;}
+
+    const mover = fromTile.occupant;
+
+    // must actually have rock
+    if (!mover.hasRock) {return true;}
+
+    const diff = heightDiff(game, game.selected, target);
+    const targetOccupant = targetTile.occupant;
+
+    // splatting another character
+    if (isPlayer(targetOccupant)) {
+        // must be same height or higher
+        return diff > 0;}
+
+    // dropping rock downward
+    return diff >= -2; // 
+}
+
+
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    rock drop validation
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+function cloneGame(game) { // this function has been completely replaced by chatgpt
+    return { // advice against mutating the grid was originally also reccomended by an LLM
+        ...game,
+
+        grid: game.grid.map(column =>
+            column.map(tile => ({
+                ...tile,
+
+                occupant: tile.occupant
+                    ? {...tile.occupant}
+                    : null
+            }))
+        )
+    };
+}
+
+function endTurn(game) {
+
+    const nextTeam =
+        game.currentPlayer === "red"
+            ? "blue"
+            : "red";
+
+    return {...game,selected: null,currentPlayer: nextTeam};
+}
+
+function checkWinner(game) {
+    let redAlive = false;
+    let blueAlive = false;
+
+    for (let x = 0; x < gridWidth; x++) { // check through the grid for living red or blue characters
+
+        for (let z = 0; z < gridDepth; z++) {
+
+            const occ = game.grid[x][z].occupant;
+
+            if (isPlayer(occ)) {
+                if (occ.team === "red") {redAlive = true;}
+                if (occ.team === "blue") {blueAlive = true;}}
+            }
+        }
+
+    if (!redAlive) {return "blue";}
+    if (!blueAlive) {return "red";}
 
   return null;
 }
 
 
-// ========================================
-// MOVE ACTION
-// ========================================
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            Actions
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
-function applyMove(game, target) {
-  const newGame = cloneGame(game);
+function actionMove(game, target) {
+    // there is a from tile and a target tile
+    const newGame = cloneGame(game);
 
-  const fromTile = getTile(newGame, ...newGame.selected);
-  const targetTile = getTile(newGame, ...target);
+    const fromTile = getTile(newGame, ...newGame.selected); //the from tile must be the selected tile
+    const targetTile = getTile(newGame, ...target); // the to tile / target tile must be the other tile
 
-  const mover = fromTile.occupant;
+    const mover = fromTile.occupant;
 
-  // pick up rock if present
-  if (isRock(targetTile.occupant)) {
-    mover.hasRock = true;
-  }
+    // pick up rock if there are rocks to be picked
+    if (isRock(targetTile.occupant)) {
+        mover.hasRock = true; // NOTE TO SELF: this is fine, because if mover already has a rock they can't move here!
+    } 
 
-  moveOccupant(fromTile, targetTile);
-
-  return endTurn(newGame);
+    moveOccupant(fromTile, targetTile);
+    return endTurn(newGame);
 }
 
+function actionDropRock(game, target) {
 
-// ========================================
-// DROP ROCK ACTION
-// ========================================
+    const newGame = cloneGame(game);
 
-function applyDropRock(game, target) {
-  const newGame = cloneGame(game);
+    const fromTile = getTile(newGame, ...newGame.selected);
+    const targetTile = getTile(newGame, ...target);
 
-  const fromTile = getTile(newGame, ...newGame.selected);
-  const targetTile = getTile(newGame, ...target);
+    const mover = fromTile.occupant;
 
-  const mover = fromTile.occupant;
+    mover.hasRock = false;
 
-  // remove rock from mover
-  mover.hasRock = false;
+    if (isPlayer(targetTile.occupant)) {
+        console.log("Splat! this is where a splat sound might play if i have time to work that out");
+    } else {
+        console.log("Clang! this is where a splat sound might play if i have time to work that out");
+    }
 
-  // splat character if present
-  if (isPlayer(targetTile.occupant)) {
-    console.log("Splat!");
-  }
-
-  // place rock on target
-  placeRock(targetTile);
-
-  return endTurn(newGame);
+    placeRock(targetTile);
+    return endTurn(newGame);
 }
 
- 
-// ========================================
-// SELF SPLAT ACTION
-// ========================================
+function actionSelfSplat(game, target) {
+    // if this is annoying me i will simply remove it
+    // likely to be buggy for no reason.
+    const newGame = cloneGame(game);
 
-function applySelfSplat(game, target) {
-  const newGame = cloneGame(game);
+    const fromTile = getTile(newGame, ...newGame.selected);
+    const targetTile = getTile(newGame, ...target);
 
-  const fromTile = getTile(newGame, ...newGame.selected);
-  const targetTile = getTile(newGame, ...target);
+    // if another character is below, splat them too
+    if (targetTile.occupant) {removeOccupant(targetTile);}
 
-  // remove target occupant too
-  if (targetTile.occupant) {
-    removeOccupant(targetTile);
-  }
-
-  // remove self
   removeOccupant(fromTile);
 
-  console.log("Self splat!");
+  console.log("Self splat! cue Splat sound effect again");
 
   return endTurn(newGame);
 }
 
 
-// ========================================
-// MAIN ACTION RESOLVER
-// ========================================
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            Actions RESOLVER
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 export function performAction(game, target) {
 
   // no selected tile
-  if (!game.selected) {
-    return game;
-  }
+    if (!game.selected) {
+        console.log(game)
+        return game;}
 
-  const fromTile = getTile(game, ...game.selected);
+    const fromTile = getTile(game, ...game.selected);
 
-  if (!fromTile || !isPlayer(fromTile.occupant)) {
-    return game;
-  }
+    if (!fromTile || !isPlayer(fromTile.occupant)) {
+        console.log(game)
+        return game;}
 
-  const mover = fromTile.occupant;
+    const mover = fromTile.occupant;
+    const diff = heightDiff(game, game.selected, target);
 
-  const diff = heightDiff(game, game.selected, target);
+    // WALK
 
-  // ----------------------------------------
-  // WALK
-  // ----------------------------------------
+    if (!cannotWalkTo(game, target)) {
+        const result = actionMove(game, target);
+        const winner = checkWinner(result);
 
-  if (!cannotWalkTo(game, target)) {
+        if (winner) {result.winner = winner;}
+    console.log(result)
+    return result;}
 
-    const result = applyMove(game, target);
+    // DROP ROCK
 
-    const winner = checkWinner(result);
+    if (!cannotDropRockTo(game, target)) {
+        const result = actionDropRock(game, target);
+        const winner = checkWinner(result);
 
-    if (winner) {
-      result.winner = winner;
-    }
+        if (winner) {result.winner = winner;}
+    console.log(result)
+    return result;}
 
-    return result;
-  }
+  // DROP, NO ROCK
 
-  // ----------------------------------------
-  // DROP ROCK
-  // ----------------------------------------
+    if (!mover.hasRock && diff < -2) { // exception case to not being able to move or drop rock
 
-  if (!cannotDropRockTo(game, target)) {
+        const result = actionSelfSplat(game, target);
+        const winner = checkWinner(result);
 
-    const result = applyDropRock(game, target);
+        if (winner) {
+            result.winner = winner;}
 
-    const winner = checkWinner(result);
-
-    if (winner) {
-      result.winner = winner;
-    }
-
-    return result;
-  }
-
-  // ----------------------------------------
-  // SELF SPLAT
-  // ----------------------------------------
-
-  if (!mover.hasRock && diff < -2) {
-
-    const result = applySelfSplat(game, target);
-
-    const winner = checkWinner(result);
-
-    if (winner) {
-      result.winner = winner;
-    }
-
-    return result;
-  }
+        console.log(result)
+        return result;}
 
   // invalid action
+  console.log(game)
+  console.log("Invalid Action Attempted")
   return game;
 }
