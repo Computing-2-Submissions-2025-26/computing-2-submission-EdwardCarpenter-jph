@@ -7,7 +7,9 @@ import { describe, it, expect } from "vitest";
 
 import {
   initGame,
-  selectTile
+  selectTile,
+  performAction,
+  getTile
 } from "../game.js";
 
 // helper function: my game contains randomess, so this lets me control the game state
@@ -26,12 +28,14 @@ function makeTestGame() {
   // place red player
   game.grid[0][0].occupant = {
     team: "red",
+    type: "character", // this was causing false fails, forgot to update this initially
     hasRock: true
   };
 
   // place blue player
   game.grid[1][0].occupant = {
     team: "blue",
+    type: "character",
     hasRock: true
   };
 
@@ -89,8 +93,133 @@ describe("Selection", () => {
 //      can a player with no rock move to a tile that is more than three higher?
 //      can a player move to a non-adjacent tile? 
 
+describe("Movement", () => {
+
+  it("can move to adjacent tile of same height?", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].height = 1;
+    game.grid[0][1].height = 1;
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [0, 1]);
+
+    expect(result.grid[0][1].occupant.team).toBe("red");
+    expect(result.grid[0][0].occupant).toBe(null);
+  });
+
+  it("cannot move to non adjacent tile?", () => {
+    const game = makeTestGame();
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [3, 3]);
+
+    expect(result.grid[0][0].occupant.team).toBe("red");
+  });
+
+  it("player with rock cannot climb more than one", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].height = 0;
+    game.grid[0][1].height = 3;
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [0, 1]);
+
+    expect(result.grid[0][0].occupant.team).toBe("red");
+    expect(result.grid[0][1].occupant).toBe(null);
+  });
+
+  it("player without rock can climb up to three tiles?", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].occupant.hasRock = false;
+
+    game.grid[0][0].height = 0;
+    game.grid[0][1].height = 3;
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [0, 1]);
+
+    expect(result.grid[0][1].occupant.team).toBe("red");
+  });
+
+});
+
 // Rock and Splat Tests: this is kind of part of movement, but i'm still separating it.
 // - can the player die by moving to a tile that is more than two lower than their current tile? TRUE?
 // - if the player drops their rock onto a tile, does that tile now have a rock on it AND the player not have a rock? TRUE?
 // - if the player drops their rock on another character, will that character be replaced by a rock and the player lose their rock? TRUE?
 // - can the player drop a rock onto a tile that already has a rock on it? FALSE?
+
+describe("Rock actions", () => {
+
+  it("dropping rock onto empty tile places rock on tile, character loses rock they had", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].height = 3;
+    game.grid[0][1].height = 0;
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [0, 1]);
+
+    expect(result.grid[0][1].occupant.type).toBe("rock");
+    expect(result.grid[0][0].occupant.hasRock).toBe(false);
+  });
+
+  it("dropping rock onto character splats them, ie makes them not exist", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].height = 1;
+    game.grid[1][0].height = 1;
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [1, 0]);
+
+    expect(result.grid[1][0].occupant.type).toBe("rock");
+    expect(result.grid[0][0].occupant.hasRock).toBe(false);
+  });
+
+  it("cannot drop rock onto another rock: if this fails i don't give many gafs unless it causes more problems", () => {
+    const game = makeTestGame();
+
+    game.grid[1][0].occupant = {
+      type: "rock"
+    };
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [1, 0]);
+
+    expect(result.grid[1][0].occupant.type).toBe("rock");
+    expect(result.grid[0][0].occupant.hasRock).toBe(true);
+  });
+
+});
+
+// jumping to death test. not essential
+
+describe("Self splat", () => {
+
+  it("player without rock can self splat by jumping too far down", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].occupant.hasRock = false;
+
+    game.grid[0][0].height = 5;
+    game.grid[0][1].height = 0;
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [0, 1]);
+
+    expect(result.grid[0][0].occupant).toBe(null);
+  });
+
+});

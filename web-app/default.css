@@ -1,0 +1,74 @@
+/*
+note that this iteration contains ai generated css that i should replace later
+It's included in this version so i can test easier
+*/
+
+body {
+  margin: 0;
+  background: #222;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+#ui {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#board {
+  position: relative;
+
+  width: 1200px;
+  height: 700px;
+
+  margin: 0 auto;
+
+  border: 2px solid #fff;
+  background: #111;
+
+  overflow: visible;
+}
+
+.tile {
+  position: absolute;
+
+  width: 80px;
+  height: 80px;
+
+  border: 2px solid #000;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  font-weight: bold;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+.tile.selected {
+  outline: 4px solid #ffff00
+}
+
+.tile.red {
+  background: #b04040;
+}
+
+.tile.blue {
+  background: #404080;
+}
+
+.tile.rock {
+  background: #707070;
+}
+
+.tile.empty {
+  background: #30a050;
+}

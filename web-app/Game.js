@@ -48,6 +48,17 @@ function isAdjacent(a, b) {
     return dx + dz === 1;
 }
 
+/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        export helpers
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+export function getGrid(game) {
+    return game.grid;
+}
+
+export function getWinner(game) {
+    return game.winner;
+}
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         tile specific helpers

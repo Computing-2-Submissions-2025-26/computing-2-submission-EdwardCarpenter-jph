@@ -1,156 +1,35 @@
 <!-- In HTML Comments are written like this -->
 <!-- They can all be removed for your apps -->
-<!doctype html> <!-- This first line tells browsers to expect modern standard html 5 -->
-<html lang="en-gb"> <!-- This is indicates the page is written in British English, useful for accessibility -->
-<meta charset="utf-8"> <!-- This indicates how the file is encoded. utf-8 is standard -->
-<title>Your Web-app Title</title> <!-- All pages need a title, this will be displayed in the browser's title bar -->
-<link rel="stylesheet" href="default.css"> <!-- Import style sheet – default.css -->
-<link rel="icon" href="./assets/favicon.png"> <!-- Import 'Favorites Icon' – favicon.png -->
-<script type="module" src="main.js"></script> <!-- Load the main script. Must be type="module". Have only one of these -->
+<!--doctype html> This first line tells browsers to expect modern standard html 5 -->
+<!--<html lang="en-gb">  This is indicates the page is written in British English, useful for accessibility -->
+<!--<meta charset="utf-8">  This indicates how the file is encoded. utf-8 is standard -->
+<!--<title>Your Web-app Title</title>  All pages need a title, this will be displayed in the browser's title bar -->
+<!--<link rel="stylesheet" href="default.css">  Import style sheet – default.css -->
+<!--<link rel="icon" href="./assets/favicon.png">  Import 'Favorites Icon' – favicon.png -->
+<!--<script type="module" src="main.js"></script>  Load the main script. Must be type="module". Have only one of these -->
 
 
-// note: this below is ai code I'm using to learn from, this will not be my final submission.
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-gb">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Tic-Tac-Toe</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f2f5;
-            margin: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Down Town Goons</title>
 
-        h1 { color: #333; }
-
-        #status {
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 10px;
-        }
-
-        .cell {
-            width: 100px;
-            height: 100px;
-            font-size: 2.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #fff;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-
-        .cell:hover { background-color: #e9ecef; }
-        .cell:disabled { cursor: default; color: #333; }
-
-        #reset-btn {
-            margin-top: 30px;
-            padding: 10px 25px;
-            font-size: 1rem;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #reset-btn:hover { background-color: #0056b3; }
-    </style>
+  <link rel="stylesheet" href="./default.css" />
+  <link rel="icon" href="./assets/favicon.png"> <!-- Import 'Favorites Icon' – favicon.png -->
 </head>
 <body>
 
-    <h1>Tic-Tac-Toe</h1>
-    <div id="status">Player X's Turn</div>
+  <h1>Down Town</h1>
 
-    <div class="board" id="board">
-        <button class="cell" onclick="makeMove(this, 0)"></button>
-        <button class="cell" onclick="makeMove(this, 1)"></button>
-        <button class="cell" onclick="makeMove(this, 2)"></button>
-        <button class="cell" onclick="makeMove(this, 3)"></button>
-        <button class="cell" onclick="makeMove(this, 4)"></button>
-        <button class="cell" onclick="makeMove(this, 5)"></button>
-        <button class="cell" onclick="makeMove(this, 6)"></button>
-        <button class="cell" onclick="makeMove(this, 7)"></button>
-        <button class="cell" onclick="makeMove(this, 8)"></button>
-    </div>
+  <div id="ui">
+    <div id="turn-display"></div>
+    <div id="winner-display"></div>
+  </div>
 
-    <button id="reset-btn" onclick="resetGame()">Reset Game</button>
+  <div id="board"></div>
 
-    <script>
-        let currentPlayer = 'X';
-        let gameState = ["", "", "", "", "", "", "", "", ""];
-        let gameActive = true;
-
-        const statusDisplay = document.getElementById('status');
-        const winningConditions = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Cols
-            [0, 4, 8], [2, 4, 6]             // Diagonals
-        ];
-
-        function makeMove(button, index) {
-            if (gameState[index] !== "" || !gameActive) return;
-
-            gameState[index] = currentPlayer;
-            button.innerText = currentPlayer;
-            button.disabled = true;
-
-            checkResult();
-        }
-
-        function checkResult() {
-            let roundWon = false;
-
-            for (let i = 0; i < winningConditions.length; i++) {
-                const [a, b, c] = winningConditions[i];
-                if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
-                    roundWon = true;
-                    break;
-                }
-            }
-
-            if (roundWon) {
-                statusDisplay.innerText = `Player ${currentPlayer} Wins!`;
-                gameActive = false;
-                return;
-            }
-
-            if (!gameState.includes("")) {
-                statusDisplay.innerText = "It's a Draw!";
-                gameActive = false;
-                return;
-            }
-
-            currentPlayer = currentPlayer === "X" ? "O" : "X";
-            statusDisplay.innerText = `Player ${currentPlayer}'s Turn`;
-        }
-
-        function resetGame() {
-            currentPlayer = "X";
-            gameState = ["", "", "", "", "", "", "", "", ""];
-            gameActive = true;
-            statusDisplay.innerText = "Player X's Turn";
-            document.querySelectorAll('.cell').forEach(button => {
-                button.innerText = "";
-                button.disabled = false;
-            });
-        }
-    </script>
+  <script type="module" src="./main.js"></script>
 </body>
 </html>
