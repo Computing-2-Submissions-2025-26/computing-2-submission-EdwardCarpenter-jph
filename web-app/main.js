@@ -198,10 +198,12 @@ function renderTopTile(tile, x, z, row) {
 
   div.style.zIndex = 2;
 
-  const brightness = 0.2 + (tile.height * 0.3);
+  const brightness = 0.5 + (tile.height * 0.2);
+
+  const blur = z * 0.6;
 
   div.style.filter =
-    `brightness(${brightness})`;
+    `brightness(${brightness}) blur(${blur}px)`;
 
   let sprite = "Blanktop.png";
 
@@ -273,6 +275,19 @@ function renderTopTile(tile, x, z, row) {
   }
 
   div.appendChild(createSprite(sprite));
+
+  /*
+    Watermark depth cues
+  */
+
+  const label = document.createElement("div");
+
+  label.classList.add("tile-label");
+
+  label.textContent =
+    `R${z + 1} H${tile.height}`;
+
+  div.appendChild(label);
 
   if (
     selected &&
