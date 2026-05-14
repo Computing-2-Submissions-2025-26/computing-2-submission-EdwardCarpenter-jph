@@ -35,8 +35,6 @@ function render() {
 
   boardElement.innerHTML = "";
 
-  renderSky();
-
   const winner = getWinner(game);
 
   if (winner) {
@@ -50,13 +48,111 @@ function render() {
   turnDisplay.textContent =
     `Current turn: ${currentPlayer.toUpperCase()}`;
 
+  /*
+    Build visual top-tile map
+  */
+
+  const topMap = Array.from(
+    { length: VISUAL_ROWS + 1 },
+    () => Array(WIDTH).fill(false)
+  );
+
   for (let z = 0; z < DEPTH; z++) {
 
     for (let x = 0; x < WIDTH; x++) {
 
       const tile = getTile(game, x, z);
 
-      renderColumn(tile, x, z);
+      const topRow =
+        VISUAL_ROWS
+        - tile.height
+        - z
+        - 1;
+
+      if (
+        topRow >= 0 &&
+        topRow < VISUAL_ROWS
+      ) {
+        topMap[topRow][x] = {
+          tile,
+          x,
+          z
+        };
+      }
+    }
+  }
+
+  /*
+    Render full visual grid
+  */
+
+  for (let row = 0; row < VISUAL_ROWS; row++) {
+
+    for (let x = 0; x < WIDTH; x++) {
+
+      const topEntry = topMap[row][x];
+
+      /*
+        TOP TILE
+      */
+
+      if (topEntry) {
+
+        renderTopTile(
+          topEntry.tile,
+          topEntry.x,
+          topEntry.z,
+          row
+        );
+
+        continue;
+      }
+
+      /*
+        SKY OR SIDE TILE
+      */
+
+      let firstTopRow = null;
+
+      for (let y = 0; y < VISUAL_ROWS; y++) {
+
+        if (topMap[y][x]) {
+          firstTopRow = y;
+          break;
+        }
+      }
+
+      /*
+        Above first top = sky
+      */
+
+      if (
+        firstTopRow === null ||
+        row < firstTopRow
+      ) {
+
+        renderSkyTile(x, row);
+        continue;
+      }
+
+      /*
+        Immediate neighbour checks only
+      */
+
+      const topAbove =
+        row > 0 &&
+        Boolean(topMap[row - 1][x]);
+
+      const topBelow =
+        row < VISUAL_ROWS - 1 &&
+        Boolean(topMap[row + 1][x]);
+
+      renderSideTile(
+        x,
+        row,
+        topAbove,
+        topBelow
+      );
     }
   }
 }
@@ -80,88 +176,21 @@ function renderSky() {
   }
 }
 
-function renderColumn(tile, x, z) {
-
-  const topRow =
-    VISUAL_ROWS
-    - tile.height
-    - z
-    - 1;
-
-  /*
-    SIDE TILES
-  */
-
-  for (
-    let row = VISUAL_ROWS - z;
-    row > topRow;
-    row -= 1
-  ) {
-
-    const side = document.createElement("div");
-
-    side.classList.add("tile");
-    side.classList.add("side");
-
-    side.style.gridColumn = x + 1;
-    side.style.gridRow = row;
-
-    /*
-      Ensure tops render above sides
-    */
-    side.style.zIndex = 1;
-
-    /*
-      Darken distant tiles
-    */
-    side.style.filter =
-      `brightness(${1 - (z * 0.12)})`; // note: this does not work!
-
-    /*
-      Determine side type
-    */
-
-    let sideLabel = "~";
-
-    const tileAbove =
-      row === topRow + 1;
-
-    const tileBelow =
-      row === VISUAL_ROWS - z;
-
-    if (tileAbove && tileBelow) {
-      sideLabel = "=";
-    } else if (tileAbove) {
-      sideLabel = "^";
-    } else if (tileBelow) {
-      sideLabel = "v";
-    }
-
-    side.textContent = sideLabel;
-
-    boardElement.appendChild(side);
-  }
-
-  /*
-    TOP TILE
-  */
+function renderTopTile(tile, x, z, row) {
 
   const div = document.createElement("button");
 
   div.classList.add("tile");
 
-  /*
-    Tops above sides
-  */
+  div.style.gridColumn = x + 1;
+  div.style.gridRow = row + 1;
+
   div.style.zIndex = 2;
 
-  const brightness = 0.4+(tile.height * 0.15);
+  const brightness = 0.5 + (tile.height * 0.2);
 
   div.style.filter =
     `brightness(${brightness})`;
-
-  div.style.gridColumn = x + 1;
-  div.style.gridRow = topRow;
 
   let label = `R${z + 1} H${tile.height}`;
 
@@ -202,6 +231,51 @@ function renderColumn(tile, x, z) {
   });
 
   boardElement.appendChild(div);
+}
+
+function renderSkyTile(x, row) {
+
+  const sky = document.createElement("div");
+
+  sky.classList.add("tile");
+  sky.classList.add("sky");
+
+  sky.style.gridColumn = x + 1;
+  sky.style.gridRow = row + 1;
+
+  boardElement.appendChild(sky);
+}
+
+function renderSideTile(
+  x,
+  row,
+  topAbove,
+  topBelow
+) {
+
+  const side = document.createElement("div");
+
+  side.classList.add("tile");
+  side.classList.add("side");
+
+  side.style.gridColumn = x + 1;
+  side.style.gridRow = row + 1;
+
+  side.style.zIndex = 1;
+
+  let label = "~";
+
+  if (topAbove && topBelow) {
+    label = "=";
+  } else if (topAbove) {
+    label = "^";
+  } else if (topBelow) {
+    label = "v";
+  }
+
+  side.textContent = label;
+
+  boardElement.appendChild(side);
 }
 
 function handleTileClick(x, z) {
