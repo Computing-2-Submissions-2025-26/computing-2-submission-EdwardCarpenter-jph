@@ -17,16 +17,7 @@ const winnerDisplay = document.getElementById("winner-display");
 const WIDTH = 12;
 const DEPTH = 4;
 
-/*
-  Projection tuning values.
-
-  These are easy to tweak later.
-*/
-const TILE_WIDTH = 80;
-const TILE_HEIGHT = 80;
-
-const HEIGHT_OFFSET = 40;
-const DEPTH_OFFSET = 50;
+const VISUAL_ROWS = 12;
 
 let selected = null;
 
@@ -48,17 +39,16 @@ function render() {
   const currentPlayer = getCurrentPlayer(game);
 
   turnDisplay.textContent =
-    `Current turn: ${currentPlayer.team}`;
+    `Current turn: ${currentPlayer.toUpperCase()}`;
 
   /*
     IMPORTANT:
 
     Render back rows first.
     Front rows last.
-
-    This creates overlap correctly.
   */
   for (let z = 0; z < DEPTH; z++) {
+
     for (let x = 0; x < WIDTH; x++) {
 
       const tile = getTile(game, x, z);
@@ -77,27 +67,23 @@ function createTileElement(tile, x, z) {
   div.classList.add("tile");
 
   /*
-    Oblique projection.
+    Visual grid system.
 
-    Higher terrain rises upward.
-    Further depth rises upward.
+    Height pushes upward.
+    Depth pushes upward.
   */
-  const screenX = x * TILE_WIDTH + z * 20;
+  const visualRow =
+    VISUAL_ROWS
+    - tile.height
+    - z
+    - 1;
 
-  const screenY =
-    500
-    - (tile.height * HEIGHT_OFFSET)
-    - (z * DEPTH_OFFSET);
+  const visualColumn = x + 1;
 
-  div.style.left = `${screenX}px`;
-  div.style.top = `${screenY}px`;
+  div.style.gridColumn = visualColumn;
+  div.style.gridRow = visualRow;
 
-  /*
-    Front rows visually overlap back rows.
-  */
-  div.style.zIndex = `${1000 + z}`;
-
-  let label = `H${tile.height}`;
+  let label = `R${z + 1} H${tile.height}`;
 
   if (tile.occupant) {
 
@@ -113,7 +99,7 @@ function createTileElement(tile, x, z) {
       label += `\n${tile.occupant.team}`;
 
       if (tile.occupant.hasRock) {
-        label += "\nHAS ROCK";
+        label += "/Rk";
       }
     }
 

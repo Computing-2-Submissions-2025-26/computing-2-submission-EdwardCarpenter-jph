@@ -20,24 +20,22 @@ h1 {
 }
 
 #board {
-  position: relative;
+  display: grid;
 
-  width: 1200px;
-  height: 700px;
+  grid-template-columns: repeat(12, 110px);
+  grid-template-rows: repeat(12, 56px);
+
+  width: max-content;
 
   margin: 0 auto;
 
   border: 2px solid #fff;
   background: #111;
-
-  overflow: visible;
 }
 
 .tile {
-  position: absolute;
-
-  width: 80px;
-  height: 80px;
+  width: 110px;
+  height: 56px;
 
   border: 2px solid #000;
   box-sizing: border-box;
@@ -48,13 +46,14 @@ h1 {
 
   font-size: 12px;
   font-weight: bold;
+  text-align: center;
 
   cursor: pointer;
   user-select: none;
 }
 
 .tile.selected {
-  outline: 4px solid #ffff00
+  outline: 4px solid #ffff00;
 }
 
 .tile.red {
@@ -66,7 +65,7 @@ h1 {
 }
 
 .tile.rock {
-  background: #707070;
+  background: #a09030;
 }
 
 .tile.empty {

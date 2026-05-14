@@ -42,10 +42,20 @@ function isTaken(taken, tile) { // .some checks an array to see if *any*
 
 function isAdjacent(a, b) {
     // checks on x and z. could expand this bit later, note to self
-    const dx = Math.abs(a[0] - b[0]);
-    const dz = Math.abs(a[1] - b[1]);
+    //const isAdjacent = false;
+    
+    //const dx = Math.abs(a[0] - b[0]); // adjacent on x
+    //const dz = Math.abs(a[1] - b[1]); // adjacent on y
 
-    return dx + dz === 1;
+    //isAdjacent = dx + dz === 1
+
+    // want to add diagonals:
+    // in a diagonal or adjacent tile but *not* in a non-adjacent tile the distance will be less than root 2
+    // which i can make 1.5 since the issue threshold is higher.
+
+    const adjDist = Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
+
+    return (adjDist <= 2);
 }
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
