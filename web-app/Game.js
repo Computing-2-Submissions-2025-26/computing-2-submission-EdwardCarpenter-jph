@@ -247,7 +247,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 // if selected character has a rock:
 // - can climb +1
-// - can descend -2
+// - can descend -2 EDIT: now given to the rock drop function
 //
 // if selected character has no rock:
 // - can climb +3

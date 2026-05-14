@@ -48,50 +48,43 @@ h1 {
   width: 110px;
   height: 56px;
 
-  border: 2px solid #000;
   box-sizing: border-box;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 12px;
-  font-weight: bold;
-  text-align: center;
-
   cursor: pointer;
   user-select: none;
 
   white-space: pre-line;
+
+  position: relative;
+  overflow: visible;
+
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 .tile.selected {
   outline: 4px solid #ffff00;
 }
 
-.tile.red {
-  background: #b04040;
-}
-
-.tile.blue {
-  background: #404080;
-}
-
-.tile.rock {
-  background: #a09030;
-}
-
-.tile.empty {
-  background: #30a050;
-}
-
-.tile.side {
-  background: #666;
-  color: #ddd;
-}
-
+.tile.side,
 .tile.sky {
-  background: #111;
-  color: #333;
-  border-color: #222;
+  background: transparent;
+}
+
+.tile-sprite {
+  position: absolute;
+
+  width: 110px;
+  height: 110px;
+
+  left: 0;
+  bottom: 0;
+
+  pointer-events: none;
+  image-rendering: auto;
 }

@@ -176,6 +176,17 @@ function renderSky() {
   }
 }
 
+function createSprite(src) {
+
+  const img = document.createElement("img");
+
+  img.classList.add("tile-sprite");
+
+  img.src = `./assets/tile/${src}`;
+
+  return img;
+}
+
 function renderTopTile(tile, x, z, row) {
 
   const div = document.createElement("button");
@@ -187,36 +198,81 @@ function renderTopTile(tile, x, z, row) {
 
   div.style.zIndex = 2;
 
-  const brightness = 0.5 + (tile.height * 0.2);
+  const brightness = 0.2 + (tile.height * 0.3);
 
   div.style.filter =
     `brightness(${brightness})`;
 
-  let label = `R${z + 1} H${tile.height}`;
+  let sprite = "Blanktop.png";
 
-  if (tile.occupant) {
+  if (
+    tile.occupant &&
+    tile.occupant.type === "rock"
+  ) {
+    sprite = "WeightTile.png";
+  }
 
-    if (tile.occupant.type === "rock") {
-      div.classList.add("rock");
-      label += "\nROCK";
-    }
+  if (
+    tile.occupant &&
+    tile.occupant.type === "character"
+  ) {
 
-    if (tile.occupant.type === "character") {
+    const character = tile.occupant;
 
-      div.classList.add(tile.occupant.team);
+    const isSelected =
+      selected &&
+      selected.x === x &&
+      selected.z === z;
 
-      label += `\n${tile.occupant.team}`;
+    if (character.team === "red") {
 
-      if (tile.occupant.hasRock) {
-        label += "/Rk";
+      if (character.hasRock) {
+
+        sprite = isSelected
+          ? "RedtopWeightAttend.png"
+          : "RedtopWeightLook.png";
+
+      } else {
+
+        sprite = isSelected
+          ? "RedtopAttend.png"
+          : "RedtopLookpng.png";
       }
     }
 
-  } else {
-    div.classList.add("empty");
+    if (character.team === "blue") {
+
+      if (character.hasRock) {
+
+        sprite = isSelected
+          ? "BluetopWeightAttend.png"
+          : "BlueTopWeightLook.png";
+
+      } else {
+
+        sprite = isSelected
+          ? "BluetopAttend.png"
+          : "BluetopLook.png";
+      }
+    }
   }
 
-  div.textContent = label;
+  const winner = getWinner(game);
+
+  if (
+    winner &&
+    tile.occupant &&
+    tile.occupant.type === "character" &&
+    tile.occupant.team === winner
+  ) {
+
+    sprite =
+      winner === "red"
+        ? "RedCelebrate.gif"
+        : "BlueCelebrate.gif";
+  }
+
+  div.appendChild(createSprite(sprite));
 
   if (
     selected &&
@@ -243,6 +299,10 @@ function renderSkyTile(x, row) {
   sky.style.gridColumn = x + 1;
   sky.style.gridRow = row + 1;
 
+  sky.appendChild(
+    createSprite("Skytile.png")
+  );
+
   boardElement.appendChild(sky);
 }
 
@@ -263,17 +323,19 @@ function renderSideTile(
 
   side.style.zIndex = 1;
 
-  let label = "~";
+  let sprite = "BrickTrans.png";
 
   if (topAbove && topBelow) {
-    label = "=";
+    sprite = "BrickStep.png";
   } else if (topAbove) {
-    label = "^";
+    sprite = "BrickTop.png";
   } else if (topBelow) {
-    label = "v";
+    sprite = "BrickBottom.png";
   }
 
-  side.textContent = label;
+  side.appendChild(
+    createSprite(sprite)
+  );
 
   boardElement.appendChild(side);
 }
