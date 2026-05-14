@@ -130,7 +130,11 @@ function generateHeights(grid) {
             const prevHeight = grid[x][z - 1].height;
 
             // ensure it doesn't go down (essential for visuals pass!)
-            grid[x][z].height = randomInt(prevHeight, prevHeight + 2);// floor at prev, goes up to 2
+            let newHeight = randomInt(prevHeight, prevHeight + 2);// floor at prev, goes up to 2
+            if (newHeight >= 8) {
+                newHeight = 7;
+            };
+            grid[x][z].height = newHeight;
         }// NOTE: change from 2 depending on how square the output is!
     }
 }

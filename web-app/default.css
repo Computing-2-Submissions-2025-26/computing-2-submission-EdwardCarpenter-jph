@@ -19,6 +19,17 @@ h1 {
   margin-bottom: 20px;
 }
 
+#controls {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#reset-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
 #board {
   display: grid;
 
@@ -50,6 +61,8 @@ h1 {
 
   cursor: pointer;
   user-select: none;
+
+  white-space: pre-line;
 }
 
 .tile.selected {
@@ -70,4 +83,15 @@ h1 {
 
 .tile.empty {
   background: #30a050;
+}
+
+.tile.side {
+  background: #666;
+  color: #ddd;
+}
+
+.tile.sky {
+  background: #111;
+  color: #333;
+  border-color: #222;
 }
