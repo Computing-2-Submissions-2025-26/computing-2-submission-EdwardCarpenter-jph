@@ -198,12 +198,19 @@ function renderTopTile(tile, x, z, row) {
 
   div.style.zIndex = 2;
 
-  const brightness = 0.5 + (tile.height * 0.2);
+  const brightness = 0.4 + (tile.height * 0.3);
 
-  const blur = z * 0.6;
+  /*
+    Front rows more contrasted.
+    Back rows more washed out.
+  */
+  const contrast = 1.5 - (z * 0.3);
+
+  const saturation = 1 // tried this, didn't work great
+    //2.0 - (z * 0.5);
 
   div.style.filter =
-    `brightness(${brightness}) blur(${blur}px)`;
+    `brightness(${brightness}) contrast(${contrast})`;
 
   let sprite = "Blanktop.png";
 
@@ -315,7 +322,7 @@ function renderSkyTile(x, row) {
   sky.style.gridRow = row + 1;
 
   sky.appendChild(
-    createSprite("Skytile.png")
+    createSprite("MistySky.png")
   );
 
   boardElement.appendChild(sky);

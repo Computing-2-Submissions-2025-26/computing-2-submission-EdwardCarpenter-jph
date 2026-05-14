@@ -91,7 +91,7 @@ h1 {
 .tile-label {
   position: absolute;
 
-  top: 6px;
+  bottom: 2px;
   left: 6px;
 
   z-index: 20;
