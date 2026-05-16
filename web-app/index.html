@@ -20,7 +20,17 @@
 </head>
 <body>
 
-  <h1>Down Town</h1>
+  <img
+  id="title-image"
+  src="./assets/OutsideGraphics/DownTownTitle.png"
+  alt="Down Town Goons"/>
+
+  <div>
+    <h1> - </h1>
+  </div>
+  <div id="board"></div>
+
+  <script type="module" src="./main.js"></script>
 
   <div id="ui">
     <div id="turn-display"></div>
@@ -28,11 +38,41 @@
   </div>
 
   <div id="controls">
-    <button id="reset-button">Reset Game</button>
-  </div>
+  <button id="reset-button"></button>
+</div>
 
-  <div id="board"></div>
-
-  <script type="module" src="./main.js"></script>
 </body>
+
+
+
+<div id="tutorial-section">
+
+  <h2>How To Play</h2>
+
+  <div class="tutorial-grid">
+
+    <div class="tutorial-card">
+      <img
+        src="./assets/OutsideGraphics/WithWeightTute.png"
+        alt="Movement with weight"
+      />
+    </div>
+
+    <div class="tutorial-card">
+      <img
+        src="./assets/OutsideGraphics/NoWeightTute.png"
+        alt="Movement without weight"
+      />
+    </div>
+
+    <div class="tutorial-card">
+      <img
+        src="./assets/OutsideGraphics/WeightDropTute.png"
+        alt="Dropping weight"
+      />
+    </div>
+
+  </div>
+</div>
+
 </html>

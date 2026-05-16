@@ -111,3 +111,64 @@ h1 {
     -1px -1px 2px #000;
 }
 
+#title-image {
+  display: block;
+
+  width: 700px;
+  max-width: 90vw;
+
+  margin: 20px auto 10px auto;
+}
+
+#reset-button {
+  width: 220px;
+  height: 70px;
+
+  border: none;
+  background: transparent;
+
+  background-image:
+    url("./assets/OutsideGraphics/ResetButton.png");
+
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  cursor: pointer;
+
+  font-size: 0;
+}
+
+#tutorial-section {
+  width: 1320px;
+  max-width: 95vw;
+
+  margin: 40px auto;
+
+  color: white;
+}
+
+#tutorial-section h2 {
+  text-align: center;
+
+  margin-bottom: 20px;
+
+  font-size: 32px;
+  letter-spacing: 2px;
+}
+
+.tutorial-grid {
+  display: flex;
+
+  justify-content: center;
+  gap: 30px;
+
+  flex-wrap: wrap;
+}
+
+.tutorial-card img {
+  width: 360px;
+  max-width: 90vw;
+
+  display: block;
+}
