@@ -17,6 +17,23 @@
 
   <link rel="stylesheet" href="./default.css" />
   <link rel="icon" href="./assets/favicon.png">
+
+<link
+  rel="preconnect"
+  href="https://fonts.googleapis.com"
+/>
+
+<link
+  rel="preconnect"
+  href="https://fonts.gstatic.com"
+  crossorigin
+/>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+  rel="stylesheet"
+/>
+
 </head>
 <body>
 
@@ -48,53 +65,91 @@
 
   <h2>HOW TO PLAY</h2>
 
-  <div id="tutorial-text">
+  <div class="tutorial-row">
 
-    <p>
-      Right, listen up you <strong>GOONS</strong>! Today's the day we finally deal with those <strong>SCUZZBAGS</strong> in our <strong>RIVAL GANG</strong>. It turns out <strong>GUN VIOLENCE</strong> is <strong>ILLEGAL</strong>, so today we'll be making do by <strong>CRUSHING</strong> them with <strong>TEN TON LEAD WEIGHTS</strong>.
-    </p>
-
-    <p>
-      A <strong>GOON</strong> with a <strong>WEIGHT</strong> can still move to any <strong>ADJACENT</strong> tile, including <strong>DIAGONALLY ADJACENT</strong> tiles. They can also step up by <strong>ONE HEIGHT</strong> or drop down by <strong>TWO HEIGHT</strong> onto any similarly adjacent tile.
-    </p>
-
-    <div class="tutorial-card">
+    <div class="tutorial-image">
       <img
         src="./assets/OutsideGraphics/WithWeightTute.png"
         alt="Movement with weight"
       />
     </div>
 
-    <p>
-      You can <strong>DROP</strong> a <strong>WEIGHT</strong> on the head of any <strong>GOON</strong> who is on an <strong>ADJACENT TILE</strong> with a height <strong>EQUAL TO OR LESSER THAN</strong> your own. You can also drop your weight on a tile more than <strong>THREE HEIGHT</strong> below yours, even if it doesn't have a goon on it.
-    </p>
+    <div class="tutorial-text">
 
-    <div class="tutorial-card">
+      <p>
+        Right, listen up you <strong>GOONS</strong>! Today's the day we finally deal with those <strong>SCUZZBAGS</strong> in our <strong>RIVAL GANG</strong>. It turns out <strong>GUN VIOLENCE</strong> is <strong>ILLEGAL</strong>, so today we'll be making do by <strong>CRUSHING</strong> them with <strong>TEN TON LEAD WEIGHTS</strong>.
+      </p>
+
+      <p>
+        A <strong>GOON</strong> with a <strong>WEIGHT</strong> can still move to any <strong>ADJACENT</strong> tile, including <strong>DIAGONALLY ADJACENT</strong> tiles. They can also step up by <strong>ONE HEIGHT</strong> or drop down by <strong>TWO HEIGHT</strong> onto any similarly adjacent tile.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="tutorial-row reverse">
+
+    <div class="tutorial-image">
       <img
         src="./assets/OutsideGraphics/WeightDropTute.png"
         alt="Dropping weight"
       />
     </div>
 
-    <p>
-      If you don't have a <strong>WEIGHT</strong>, you can pick up any weight that's been <strong>DROPPED</strong>. But there's no rush; with no weight, you can climb up <strong>TWO HEIGHT</strong> instead of just one! If you drop more than <strong>TWO HEIGHT</strong> onto a goon, they'll be kind enough to break your fall! Though if you drop that far without a soft landing, you're gonna have a bad time.
-    </p>
+    <div class="tutorial-text">
 
-    <div class="tutorial-card">
+      <p>
+        You can <strong>DROP</strong> a <strong>WEIGHT</strong> on the head of any <strong>GOON</strong> who is on an <strong>ADJACENT TILE</strong> with a height <strong>EQUAL TO OR LESSER THAN</strong> your own.
+      </p>
+
+      <p>
+        You can also drop your weight on a tile more than <strong>THREE HEIGHT</strong> below yours, even if it doesn't have a goon on it.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="tutorial-row">
+
+    <div class="tutorial-image">
       <img
         src="./assets/OutsideGraphics/NoWeightTute.png"
         alt="Movement without weight"
       />
     </div>
 
+    <div class="tutorial-text">
+
+      <p>
+        If you don't have a <strong>WEIGHT</strong>, you can pick up any weight that's been <strong>DROPPED</strong>.
+      </p>
+
+      <p>
+        With no weight, you can climb up <strong>TWO HEIGHT</strong> instead of just one! If you drop more than <strong>TWO HEIGHT</strong> onto a goon, they'll be kind enough to break your fall.
+      </p>
+
+      <p>
+        Though if you drop that far without a soft landing, you're gonna have a bad time.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div id="tip-box">
+
     <h3>IMPORTANT TIP</h3>
-
     <p>
-      This city can be pretty confusing, spatially speaking. Greenhorn <strong>GOONS</strong> often ask me, “How can I tell where I'm standing?” Well, you got to get yourself an impression of the <strong>LAY OF THE LAND</strong> in <strong>3D SPACE</strong> when you first turn up!
+    This city can be pretty confusing, spatially speaking. 
+    Greenhorn GOONS often ask me, How can I tell where I'm standing? 
+    Well, you got to get yourself an impression of the LAY OF THE LAND in 3D SPACE when you first turn up!
     </p>
-
     <p>
-      Tiles <strong>HIGHER UP</strong> are better lit, so those are <strong>BRIGHTER</strong>. It's pretty foggy, so tiles <strong>FURTHER BACK</strong> are <strong>LOWER CONTRAST</strong>! Worst comes to worst, there's a handy little <strong>WATERMARK</strong> showing the <strong>ROW</strong> and <strong>HEIGHT</strong> of a tile in case you get too confused.
+    Tiles <strong>HIGHER UP</strong> are better lit, so those are <strong>BRIGHTER</strong>. 
+    It's pretty foggy, so tiles <strong>FURTHER BACK</strong> are <strong>LOWER CONTRAST</strong>! 
+    Worst comes to worst, there's a handy little <strong>WATERMARK</strong> showing the <strong>ROW</strong> and <strong>HEIGHT</strong> of a tile in case you get too confused.
     </p>
 
   </div>
