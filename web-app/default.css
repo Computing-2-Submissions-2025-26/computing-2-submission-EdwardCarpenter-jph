@@ -172,3 +172,43 @@ h1 {
 
   display: block;
 }
+
+#tutorial-text {
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  line-height: 1.7;
+
+  font-size: 18px;
+
+  color: #ddd;
+}
+
+#tutorial-text p {
+  margin-bottom: 28px;
+}
+
+#tutorial-text strong {
+  color: #fff;
+
+  letter-spacing: 1px;
+}
+
+#tutorial-text h3 {
+  margin-top: 50px;
+
+  text-align: center;
+
+  font-size: 28px;
+
+  letter-spacing: 2px;
+}
+
+.tutorial-card {
+  display: flex;
+
+  justify-content: center;
+
+  margin: 30px 0 50px 0;
+}
