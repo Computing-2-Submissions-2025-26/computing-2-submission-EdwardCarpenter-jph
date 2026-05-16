@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="en-gb">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Down Town Goons</title>
 
@@ -26,7 +26,11 @@
   <img id="title-image" src="./assets/OutsideGraphics/DownTownTitle.png" alt="Down Town Goons"/>
 
   <div><h1>-</h1></div>
-  
+
+  <div id="controls">
+    <button id="reset-button"></button>
+  </div>
+
   <div id="board"></div>
 
   <script type="module" src="./main.js"></script>
@@ -36,11 +40,7 @@
     <div id="winner-display"></div>
   </div>
 
-  <div id="controls">
-    <button id="reset-button"></button>
-  </div>
 
-  <!-- Moved inside the body tag where it belongs -->
   <div id="tutorial-section">
     <h2>HOW TO PLAY</h2>
 

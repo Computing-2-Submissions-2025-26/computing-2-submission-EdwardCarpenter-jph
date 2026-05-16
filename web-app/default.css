@@ -4,8 +4,6 @@
 @font-face {
   font-family: "Bebas Neue";
   src: url("./assets/Bebas_Neue/BebasNeue-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
 }
 
 /* --- Core Game Layout --- */
@@ -14,18 +12,15 @@ body {
   background: #222;
   color: #fff;
   font-family: "Bebas Neue", sans-serif;
-  letter-spacing: 1px;
 }
 
 h1 {
   text-align: center;
-  margin-top: 20px;
 }
 
 #title-image {
   display: block;
-  width: 700px;
-  max-width: 90vw;
+  width: 1000px;
   margin: 20px auto 10px auto;
 }
 
@@ -137,7 +132,6 @@ h1 {
   flex-direction: row-reverse;
 }
 
-/* ADJUST THIS VALUE TO SHRINK/GROW IMAGES */
 .tutorial-image img {
   width: 200px;
   height: auto;
