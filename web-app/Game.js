@@ -19,7 +19,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 // separated  into 2 bits, since the alternative was confusing later on
 const gridWidth = 12;
-const gridDepth = 4;
+const gridDepth = 4; //4
 
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -433,9 +433,13 @@ function actionSelfSplat(game, target) {
     const targetTile = getTile(newGame, ...target);
 
     // if another character is below, splat them too
-    if (targetTile.occupant) {removeOccupant(targetTile);}
-
-  removeOccupant(fromTile);
+    if (targetTile.occupant) {
+        // splat other character and they break your fall
+        removeOccupant(targetTile)
+        moveOccupant(fromTile,targetTile);
+    } else {
+        removeOccupant(fromTile);
+    }
 
   console.log("Self splat! cue Splat sound effect again");
 

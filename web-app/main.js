@@ -15,7 +15,7 @@ const winnerDisplay = document.getElementById("winner-display");
 const resetButton = document.getElementById("reset-button");
 
 const WIDTH = 12;
-const DEPTH = 4;
+const DEPTH = 4;//4
 
 const VISUAL_ROWS = 12;
 
@@ -34,6 +34,15 @@ render();
 function render() {
 
   boardElement.innerHTML = "";
+
+  const backgroundFog = document.createElement("img");
+
+  backgroundFog.id = "background-fog";
+
+  backgroundFog.src =
+    "./assets/tile/BackFog.png";
+
+  boardElement.appendChild(backgroundFog);
 
   const winner = getWinner(game);
 
@@ -130,8 +139,6 @@ function render() {
         firstTopRow === null ||
         row < firstTopRow
       ) {
-
-        renderSkyTile(x, row);
         continue;
       }
 
@@ -312,20 +319,6 @@ function renderTopTile(tile, x, z, row) {
 }
 
 function renderSkyTile(x, row) {
-
-  const sky = document.createElement("div");
-
-  sky.classList.add("tile");
-  sky.classList.add("sky");
-
-  sky.style.gridColumn = x + 1;
-  sky.style.gridRow = row + 1;
-
-  sky.appendChild(
-    createSprite("MistySky.png")
-  );
-
-  boardElement.appendChild(sky);
 }
 
 function renderSideTile(
