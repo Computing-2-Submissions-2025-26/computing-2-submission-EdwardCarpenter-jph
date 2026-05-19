@@ -16,10 +16,19 @@ body {
 
 .title-banner {
   background-color: #cacaca;
+
+  background-image:url("./assets/OutsideGraphics/BackFog.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+  position: relative;
+  z-index: 1;
+
   width: 100%;
-  padding: 20px 0;
+  padding: 20px -5;
   text-align: center;
-  border: 10px solid #555;
+  /*border: 10px solid #555;*/
 }
 
 #title-image {
