@@ -102,7 +102,7 @@ function placeRock(tile) {
   };
 }
 
-function moveOccupant(fromTile, toTile) { // this is another ai addition
+function moveOccupant(fromTile, toTile) {
   toTile.occupant = fromTile.occupant;
   fromTile.occupant = null;
 }
@@ -487,7 +487,7 @@ export function performAction(game, target) {
     console.log(result)
     return result;}
 
-  // DROP, NO ROCK
+  // DROP, WITH NOTHING (CHEESE WITH NOTHING?)
 
     if (!mover.hasRock && diff < -2) { // exception case to not being able to move or drop rock
 

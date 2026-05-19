@@ -22,10 +22,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
 </head>
 <body>
+  
+  <div class="title-banner".>
+    <img id="title-image" src="./assets/OutsideGraphics/DownTownTitle.png" alt="Down Town Goons" class="title-image"/>
+</div>
 
-  <img id="title-image" src="./assets/OutsideGraphics/DownTownTitle.png" alt="Down Town Goons"/>
-
-  <div><h1>-</h1></div>
+  <div><h2></h2></div>
 
   <div id="controls">
     <button id="reset-button"></button>
@@ -80,6 +82,13 @@
       <p>This city can be pretty confusing, spatially speaking. Greenhorn GOONS often ask me, How can I tell where I'm standing? Well, you got to get yourself an impression of the LAY OF THE LAND in 3D SPACE when you first turn up!</p>
       <p>Tiles <strong>HIGHER UP</strong> are better lit, so those are <strong>BRIGHTER</strong>. It's pretty foggy, so tiles <strong>FURTHER BACK</strong> are <strong>LOWER CONTRAST</strong>! Worst comes to worst, there's a handy little <strong>WATERMARK</strong> showing the <strong>ROW</strong> and <strong>HEIGHT</strong> of a tile in case you get too confused.</p>
     </div>
+  </div>
+
+  <div id="ai-disclosure">
+    <h3>AI DISCLOSURE</h3>
+    <p>Limited and judicious use had been made of AI models in developing this web app;</p>
+    <p><strong>OpenAI's GPT-5.5</strong> was used to: debug code, re/write limited sections of code in game.js (signposted in comments: cloneGame), rapidly iterate through possibilities for depth cues in the rendering system in main.js</p>
+    <p><strong>Google's Gemini Flash</strong> was also used to rewrite limited sections of code in main and game.js (signposted in comments: createEmptyGrid)</p>
   </div>
 
 </body>

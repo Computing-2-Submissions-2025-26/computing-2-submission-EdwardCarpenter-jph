@@ -1,5 +1,3 @@
-// most of the code in this file is straight up just chatgpt code; i want to test the game manually
-// and i can improve this code myself later
 import {
   initGame,
   selectTile,
@@ -31,7 +29,8 @@ resetButton.addEventListener("click", () => {
 
 render();
 
-function render() {
+
+function render() { // this section wasn't originally written by ai
 
   boardElement.innerHTML = "";
 

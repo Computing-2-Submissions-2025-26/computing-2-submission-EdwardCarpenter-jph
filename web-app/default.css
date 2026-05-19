@@ -6,7 +6,7 @@
   src: url("./assets/Bebas_Neue/BebasNeue-Regular.ttf") format("truetype");
 }
 
-/* --- Core Game Layout --- */
+/* core layout */
 body {
   margin: 0;
   background: #222;
@@ -14,14 +14,22 @@ body {
   font-family: "Bebas Neue", sans-serif;
 }
 
-h1 {
+.title-banner {
+  background-color: #cacaca;
+  width: 100%;
+  padding: 20px 0;
   text-align: center;
+  border: 10px solid #555;
 }
 
 #title-image {
-  display: block;
-  width: 1000px;
-  margin: 20px auto 10px auto;
+  max-width: 100%;
+  height: auto;
+  transform: translateY(-15px);
+}
+
+h1 {
+  text-align: center;
 }
 
 #ui {
@@ -47,7 +55,7 @@ h1 {
   font-size: 0;
 }
 
-/* --- Game Board & Tiles --- */
+/* gameboard and game bits */
 #board {
   display: grid;
   grid-template-columns: repeat(12, 110px);
@@ -107,7 +115,7 @@ h1 {
   text-shadow: 1px 1px 2px #000, -1px -1px 2px #000;
 }
 
-/* --- Tutorial Section --- */
+/* tutorial */
 #tutorial-section {
   width: 1200px;
   max-width: 95vw;
@@ -149,7 +157,8 @@ h1 {
   color: #fff;
 }
 
-/* --- Tips Box --- */
+/* tips */
+
 #tip-box {
   margin-top: 40px;
   padding: 30px;
@@ -161,4 +170,12 @@ h1 {
 #tip-box h3 {
   font-size: 42px;
   margin-top: 0;
+}
+
+#ai-disclosure {
+  margin-top: -110px;
+  padding:30px;
+  line-height:1.5px;
+  text-align:left;
+  color: #555;
 }
