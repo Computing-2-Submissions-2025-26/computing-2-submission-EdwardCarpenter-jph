@@ -8,8 +8,10 @@ import {
 } from "./game.js";
 
 const boardElement = document.getElementById("board");
-const turnDisplay = document.getElementById("turn-display");
-const winnerDisplay = document.getElementById("winner-display");
+const redTurnDisplay = document.getElementById("red-turn-display");
+const redWinnerDisplay = document.getElementById("red-winner-display");
+const blueTurnDisplay = document.getElementById("blue-turn-display");
+const blueWinnerDisplay = document.getElementById("blue-winner-display");
 const resetButton = document.getElementById("reset-button");
 
 const WIDTH = 12;
@@ -47,9 +49,22 @@ function render() { // this section wasn't originally written by ai
   const currentPlayer = getCurrentPlayer(game);
 
   if (winner) {
-    turnDisplay.textContent = `${winner} wins!`;
+    if (winner === "red") {
+      redTurnDisplay.textContent = `Red wins!`;
+      blueTurnDisplay.textContent = ``;
+    } else {
+      blueTurnDisplay.textContent = `Blue wins!`
+      redTurnDisplay.textContent = ``;
+    }
+    
   } else {
-    turnDisplay.textContent =`Current turn: ${currentPlayer.toUpperCase()}`;
+    if (currentPlayer === "red") {
+      redTurnDisplay.textContent =`Current turn: RED`;
+      blueTurnDisplay.textContent =``;
+    } else {
+      blueTurnDisplay.textContent=`Current turn:BLUE`
+      redTurnDisplay.textContent =``;
+    }
   }
 
   
