@@ -44,17 +44,16 @@ function render() { // this section wasn't originally written by ai
   boardElement.appendChild(backgroundFog);
 
   const winner = getWinner(game);
-
-  if (winner) {
-    winnerDisplay.textContent = `${winner} wins!`;
-  } else {
-    winnerDisplay.textContent = "";
-  }
-
   const currentPlayer = getCurrentPlayer(game);
 
-  turnDisplay.textContent =
-    `Current turn: ${currentPlayer.toUpperCase()}`;
+  if (winner) {
+    turnDisplay.textContent = `${winner} wins!`;
+  } else {
+    turnDisplay.textContent =`Current turn: ${currentPlayer.toUpperCase()}`;
+  }
+
+  
+
 
   /*
     Build visual top-tile map
