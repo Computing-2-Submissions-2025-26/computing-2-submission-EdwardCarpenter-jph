@@ -15,26 +15,22 @@ body {
 }
 
 .title-banner {
-  background-color: #cacaca;
-
-  background-image:url("./assets/OutsideGraphics/BackFog.png");
+  background-image: url("./assets/Tile/BackFog.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
 
-  position: relative;
-  z-index: 1;
+  min-height: 250px;
 
-  width: 100%;
-  padding: 20px -5;
-  text-align: center;
-  /*border: 10px solid #555;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #title-image {
   max-width: 100%;
   height: auto;
-  transform: translateY(-15px);
+  transform: translateY(-20px);
 }
 
 h1 {
