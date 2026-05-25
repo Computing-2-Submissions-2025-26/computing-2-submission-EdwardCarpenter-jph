@@ -36,16 +36,16 @@ I'll run the same commands when I download your repos.
 ### Unit Tests – Implementation
 *Implement in code the unit tests specified above.*
 
-- [ ] Implement the tests above.
+- [X] Implement the tests above.
 
 ### Web Application
 *Produce a web application that allows a user to interface with your game module.*
 
 - Implement in `/web-app`
-  - [ ] `index.html`
-  - [ ] `default.css`
-  - [ ] `main.js`
-  - [ ] Any other files you need to include.
+  - [X] `index.html`
+  - [X] `default.css`
+  - [X] `main.js`
+  - [X] Any other files you need to include.
 
 ### Finally
 - [ ] Push to GitHub.
