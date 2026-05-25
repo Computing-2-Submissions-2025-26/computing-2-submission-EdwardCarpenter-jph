@@ -44,7 +44,7 @@ function makeTestGame() {
 
 // test test
 describe("does two plus two equal four?", () => {
-  it("no shimmy, sherlock!", () => {
+  it("the test tests passes, 2+2=4.", () => {
     expect(2 + 2).toBe(4);
   });
 });
@@ -186,7 +186,7 @@ describe("Rock actions", () => {
     expect(result.grid[0][0].occupant.hasRock).toBe(false);
   });
 
-  it("cannot drop rock onto another rock: if this fails i don't give many gafs unless it causes more problems", () => {
+  it("cannot drop rock onto another rock", () => {
     const game = makeTestGame();
 
     game.grid[1][0].occupant = {
