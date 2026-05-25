@@ -185,6 +185,14 @@ function placePlayers(grid) {
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 export function initGame() {
+    /*
+    Creates a new random grid as the playspace.
+    - Each tile is given a height, on a slope such that information is not concealed
+    - initial positions of players are set randomly
+
+    @returns {object} game - the initial gamestate
+    */
+
     const grid = createEmptyGrid();
 
     generateHeights(grid);
@@ -194,11 +202,17 @@ export function initGame() {
 }
 
 
-/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    query functions for higher lv
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
-
 export function getTile(game, x, z) {
+    /*
+    Returns the tile at the coordinates if it exists
+    
+    @Param {object} game - the gamestate to get the tile from
+    @Param {number} x - the x coordinate of the tile
+    @Param {number} z - the z coordinate of the tile
+
+    @returns {object|null} tile - the tile at the coordinates, or null if it doesn't exist
+    */
+
 
     if (!game.grid[x] || !game.grid[x][z]) { // inbuilt error catcher! makes sure the tile exists.
         return null;
@@ -229,7 +243,16 @@ function heightDiff(game, from, to) {
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 export function selectTile(game, x, z) {
-    // function makes sure the selection is an existing player 
+    /*
+    Selects a tile if it contains a character of the current player's team
+    Otherwise, the game state is returned with no changes
+
+    @param {object} game - the gamestate to select the tile on
+    @param {number} x - the x coordinate of the tile to select
+    @param {number} z - the z coordinate of the tile to select
+
+    @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
+    */
 
     const tile = getTile(game, x, z);
 
