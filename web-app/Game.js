@@ -55,7 +55,7 @@ function isAdjacent(a, b) {
 
     const adjDist = Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
 
-    return (adjDist <= 2);
+    return (adjDist <= 1.5);
 }
 
 
