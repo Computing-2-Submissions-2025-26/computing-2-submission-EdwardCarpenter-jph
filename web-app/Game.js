@@ -58,15 +58,24 @@ function isAdjacent(a, b) {
     return (adjDist <= 2);
 }
 
-/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        export helpers
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 export function getGrid(game) {
+    /* 
+    returns the grid from the gamestate, for use in rendering and tests
+
+    @param {object} game - the gamestate to get the grid from
+    @returns {array} grid - the grid from the gamestate
+    */
     return game.grid;
 }
 
 export function getWinner(game) {
+    /*
+    returns the winner of the game
+
+    @param {object} game - the gamestate to check for a winner
+    @returns {string|null} winner - the team that has won, or null if there is no winner
+    */
     return game.winner;
 }
 
@@ -221,6 +230,13 @@ export function getTile(game, x, z) {
 }
 
 export function getCurrentPlayer(game) {
+    /*
+    returns the current player from the gamestate for use in rendering and tests
+
+    @param {object} game - the gamestate to get the current player from
+
+    @returns {string} currentPlayer - the team of the current player
+    */
     return game.currentPlayer; // returns the property controlling the current player
 }
 
@@ -475,6 +491,15 @@ function actionSelfSplat(game, target) {
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 export function performAction(game, target) {
+    /*
+    Resolves an attempted action depending on it's context; 
+    different actions map to different moves depending on the nature of the target
+    
+    @param {object} game - the gamestate to perform the action on
+    @param {array} target - the coordinates of the tile to perform the action on
+
+    @returns {object} game - the new gamestate after the action is performed, or unchanged if the action was invalid
+    */
 
   // no selected tile
     if (!game.selected) {
