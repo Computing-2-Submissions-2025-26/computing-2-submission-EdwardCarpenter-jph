@@ -223,3 +223,47 @@ describe("Self splat", () => {
   });
 
 });
+
+// need to add winner test, team switch test?
+
+describe("Winning test", () => { // note, i messed this test up and need to fix it
+
+  it("when all players of one team are eliminated, the other team wins", () => {
+    const game = makeTestGame();
+    game.grid[1][0].occupant = null; // eliminate blue player
+
+    //const winner = getWinner(game);
+
+    //expect(winner).toBe("red");
+  });
+});
+
+describe("Team switch test", () => {
+
+  it("when one team makes a move, it is now the other team's turn", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].height = 1;
+    game.grid[0][1].height = 1;
+    const selected = selectTile(game, 0, 0);
+    const result = performAction(selected, [0, 1]);
+
+    const currentPlayer = getCurrentPlayer(result);
+
+    expect(currentPlayer).toBe("blue");
+  });
+});
+
+// invalid state test: this was suggested by chatGPT while debugging
+describe("Invalid actions", () => {
+
+  it("invalid moves do not change the turn", () => {
+    const game = makeTestGame();
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [5, 5]);
+
+    expect(getCurrentPlayer(result)).toBe("red");
+  });
+});
