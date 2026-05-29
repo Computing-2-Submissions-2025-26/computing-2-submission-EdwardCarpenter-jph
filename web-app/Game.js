@@ -398,25 +398,14 @@ function endTurn(game) {
 }
 
 function checkWinner(game) {
-    let redAlive = false;
-    let blueAlive = false;
+    const allTiles = game.grid.flat();
+    const redAlive = allTiles.some(tile => isPlayer(tile.occupant) && tile.occupant.team === "red");
+    const blueAlive = allTiles.some(tile => isPlayer(tile.occupant) && tile.occupant.team === "blue");
 
-    for (let x = 0; x < gridWidth; x++) { // check through the grid for living red or blue characters
+    if (!redAlive) return "blue";
+    if (!blueAlive) return "red";
 
-        for (let z = 0; z < gridDepth; z++) {
-
-            const occ = game.grid[x][z].occupant;
-
-            if (isPlayer(occ)) {
-                if (occ.team === "red") {redAlive = true;}
-                if (occ.team === "blue") {blueAlive = true;}}
-            }
-        }
-
-    if (!redAlive) {return "blue";}
-    if (!blueAlive) {return "red";}
-
-  return null;
+    return null;
 }
 
 

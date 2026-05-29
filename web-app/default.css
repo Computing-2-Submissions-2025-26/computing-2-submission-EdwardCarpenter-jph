@@ -110,6 +110,10 @@ h1 {
   border: none;
 }
 
+button:focus { /* keyboard focus improved for simpler keyboard navigation; thickening button:focus was a chatgpt suggestion*/
+  outline: 5px solid #fff;
+}
+
 .tile.selected {
   outline: 4px solid #ffff00;
 }
