@@ -14,6 +14,27 @@ const blueTurnDisplay = document.getElementById("blue-turn-display");
 const blueWinnerDisplay = document.getElementById("blue-winner-display");
 const resetButton = document.getElementById("reset-button");
 
+/*
+  Accessibility, ai section
+*/
+
+boardElement.setAttribute(
+  "aria-label",
+  "Game board"
+);
+
+redTurnDisplay.setAttribute(
+  "aria-live",
+  "polite"
+);
+
+blueTurnDisplay.setAttribute(
+  "aria-live",
+  "polite"
+);
+// ai bit end
+
+
 const WIDTH = 12;
 const DEPTH = 4;//4
 
@@ -252,6 +273,33 @@ function renderTopTile(tile, x, z, row) {
       selected &&
       selected.x === x &&
       selected.z === z;
+
+    // adding ai code in here for aria accessibility
+    let label = `Column ${x + 1}, layer ${z + 1}`;
+
+if (tile.occupant?.type === "rock") {
+  label += ", rock";
+}
+
+if (tile.occupant?.type === "character") {
+
+  label += `, ${tile.occupant.team} goon`;
+
+  if (tile.occupant.hasRock) {
+    label += ", carrying a Ten Ton Weight!";
+  }
+}
+
+if (
+  selected &&
+  selected.x === x &&
+  selected.z === z
+) {
+  label += ", selected";
+}
+
+div.setAttribute("aria-label", label);
+// ai code end
 
     if (character.team === "red") {
 

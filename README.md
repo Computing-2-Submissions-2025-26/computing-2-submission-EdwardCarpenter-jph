@@ -30,7 +30,7 @@ I'll run the same commands when I download your repos.
 ### Unit Tests – Specification
 *For the Game module API you have produced, write a set of unit tests descriptions that specify the expected behaviour of one aspect of your API, e.g. you might pick the win condition, or how the state changes when a move is made.*
 
-- [ ] Write unit test definitions in `/web-app/tests`.
+- [X] Write unit test definitions in `/web-app/tests`.
 - [ ] Check the headings appear in the Testing sidebar.
 
 ### Unit Tests – Implementation

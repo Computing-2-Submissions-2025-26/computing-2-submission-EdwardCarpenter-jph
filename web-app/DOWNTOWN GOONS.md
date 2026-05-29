@@ -33,7 +33,7 @@ Limited and judicious use has been made of AI models in developing this web app:
 
 
 
-**OpenAI's GPT-5.5** was used to: debug code, re/write limited sections of code in game.js (signposted in comments: cloneGame), rapidly iterate through possibilities for depth cues in the rendering system in main.js. A test in game.test.js, "Invalid Actions", was also AI suggested and generated. I also had ChatGPT explain how to do certain things in CSS and HTML: many inclusions in.tile and .tile-sprite in default.css were suggested by this model.
+**OpenAI's GPT-5.5** was used to: debug code, re/write limited sections of code in game.js (signposted in comments: cloneGame), rapidly iterate through possibilities for depth cues in the rendering system in main.js. A test in game.test.js, "Invalid Actions", was also AI suggested and generated. I also had ChatGPT explain how to do certain things in CSS and HTML: many inclusions in.tile and .tile-sprite in default.css were suggested by this model. Aria label functionality was implemented with this model as well.
 
 **Google's Gemini Flash** was also used to rewrite limited sections of code in main and game.js (signposted in comments: createEmptyGrid) as well as check default.css for best practice.
 
