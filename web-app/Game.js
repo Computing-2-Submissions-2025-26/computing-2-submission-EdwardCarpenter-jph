@@ -1,16 +1,12 @@
 // game.js
 
-/*
-issues with ideas in main:
-- rendering logic is supposed to go on the other side.
-    for simplicity, this is just going to be game logic
-- game must be a data structure for marks (?)
-    though we've been told the front end is what we're judged on.
-*/
-
-// big change i need to keep in mind:
-// "game" is now used to save the gamestate
-// whereas before i had a bunch of different arrays! this was bad.
+/**
+ * game state module for the tile based game, does not contain rendering code
+ *
+ * @module game
+ *
+ * the game state is immutable; functions are pure and do not mutate the game state
+ */
 
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

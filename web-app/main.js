@@ -218,12 +218,12 @@ function renderSky() {
 }
 
 function createSprite(src) {
-
   const img = document.createElement("img");
 
   img.classList.add("tile-sprite");
-
   img.src = `./assets/tile/${src}`;
+
+  img.alt = "image described in corresponding button's aria-label";
 
   return img;
 }
