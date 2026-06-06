@@ -77,7 +77,7 @@ function render() { // this section wasn't originally written by ai
       blueTurnDisplay.textContent = `Blue wins!`
       redTurnDisplay.textContent = ``;
     }
-    
+
   } else {
     if (currentPlayer === "red") {
       redTurnDisplay.textContent =`Current turn: RED`;
@@ -88,7 +88,7 @@ function render() { // this section wasn't originally written by ai
     }
   }
 
-  
+
 
 
   /*
