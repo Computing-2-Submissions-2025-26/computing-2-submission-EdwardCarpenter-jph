@@ -1,8 +1,12 @@
 # README - DOWNTOWN GOONS
 
-A turn-based game based around dropping 10 ton weights on rival gangsters.
+A turn-based game based around dropping 10 ton weights on rival gangsters. Details on how to play are included in the web app itself.
 
+### Notes for Peer Reviewer
 
+- I am having trouble setting up the correct version of JSLint, so i'd appreviate an overview of how well this passes lint. 
+- My JSDoc is incomplete and unclear in areas: advice on this is also helpful.
+- There is one Axe Devtools error i have temporarily put off fixing, since the obvious ways of doing so cause other issues. I am unsure if this error is actually impactful enough to be a problem.
 
 ### Installation
 
@@ -23,8 +27,7 @@ The way this setup has been tested is with Firefox Developer Edition: with **ctr
 
 ### Credits:
 
-This is the work of Edward (Ted) John Carpenter, CID 02560403, tjc24@ic.ac.uk
-
+Credits have been omitted in this version, since peer review should be anonymous.
 
 
 ##### AI Disclosure (Mirrored on webpage):
