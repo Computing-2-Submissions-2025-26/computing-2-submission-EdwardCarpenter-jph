@@ -20,15 +20,14 @@
             ]
         },
         {
-            "name": "Debug Module",
+            "name": "Debug Game",
             "type": "node",
             "request": "launch",
             "skipFiles": [
                 "${workspaceFolder}/node_modules/**",
                 "<node_internals>/**"
             ],
-            // You'll need to change this line below to point to your module.
-            "program": "${workspaceFolder}/web-app/Module.js"
+            "program": "${workspaceFolder}/web-app/Game.js"
         },
         {
             "name": "Generate Docs",

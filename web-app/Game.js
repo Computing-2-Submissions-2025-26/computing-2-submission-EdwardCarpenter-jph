@@ -59,7 +59,7 @@ export function getGrid(game) {
     /* 
     returns the grid from the gamestate, for use in rendering and tests
 
-    @param {object} game - the gamestate to get the grid from
+    @Param {object} game - the gamestate to get the grid from
     @returns {array} grid - the grid from the gamestate
     */
     return game.grid;
@@ -69,7 +69,7 @@ export function getWinner(game) {
     /*
     returns the winner of the game
 
-    @param {object} game - the gamestate to check for a winner
+    @Param {object} game - the gamestate to check for a winner
     @returns {string|null} winner - the team that has won, or null if there is no winner
     */
     return game.winner;
@@ -229,7 +229,7 @@ export function getCurrentPlayer(game) {
     /*
     returns the current player from the gamestate for use in rendering and tests
 
-    @param {object} game - the gamestate to get the current player from
+    @Param {object} game - the gamestate to get the current player from
 
     @returns {string} currentPlayer - the team of the current player
     */
@@ -259,9 +259,9 @@ export function selectTile(game, x, z) {
     Selects a tile if it contains a character of the current player's team
     Otherwise, the game state is returned with no changes
 
-    @param {object} game - the gamestate to select the tile on
-    @param {number} x - the x coordinate of the tile to select
-    @param {number} z - the z coordinate of the tile to select
+    @Param {object} game - the gamestate to select the tile on
+    @Param {number} x - the x coordinate of the tile to select
+    @Param {number} z - the z coordinate of the tile to select
 
     @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
     */
@@ -480,8 +480,8 @@ export function performAction(game, target) {
     Resolves an attempted action depending on it's context; 
     different actions map to different moves depending on the nature of the target
     
-    @param {object} game - the gamestate to perform the action on
-    @param {array} target - the coordinates of the tile to perform the action on
+    @Param {object} game - the gamestate to perform the action on
+    @Param {array} target - the coordinates of the tile to perform the action on
 
     @returns {object} game - the new gamestate after the action is performed, or unchanged if the action was invalid
     */
