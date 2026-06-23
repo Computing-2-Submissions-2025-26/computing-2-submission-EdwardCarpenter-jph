@@ -54,7 +54,9 @@ render();
 
 
 function render() { // this section wasn't originally written by ai
-
+  
+  const validTargets = getValidTargets(game);
+  
   boardElement.innerHTML = "";
 
   const backgroundFog = document.createElement("img");
@@ -229,6 +231,10 @@ function createSprite(src) {
 }
 
 function renderTopTile(tile, x, z, row) {
+
+  if (validTargets.some(([vx, vz]) => vx === x && vz === z)) {
+  div.classList.add("valid-target");
+}
 
   const div = document.createElement("button");
 
@@ -417,16 +423,21 @@ function renderSideTile(
 }
 
 function handleTileClick(x, z) {
+  const tile = getTile(game, x, z);
+  const clickedOwnCharacter =
+    tile &&
+    tile.occupant &&
+    tile.occupant.type === "character" &&
+    tile.occupant.team === getCurrentPlayer(game);
 
-  if (game.selected) {
+  if (game.selected && (clickedOwnCharacter || (x === selected.x && z === selected.z))) {
+    game = selectTile(game, x, z);
+  } else if (game.selected) {
     game = performAction(game, [x, z]);
   } else {
     game = selectTile(game, x, z);
   }
 
-  selected = game.selected
-    ? {x: game.selected[0], z: game.selected[1]}
-    : null;
-
+  selected = game.selected ? {x: game.selected[0], z: game.selected[1]} : null;
   render();
 }

@@ -145,6 +145,11 @@ button:focus { /* keyboard focus improved for simpler keyboard navigation; thick
   text-shadow: 1px 1px 2px #000, -1px -1px 2px #000;
 }
 
+.tile.valid-target {
+  outline: 3px dashed #7CFC00;
+  outline-offset: -3px;
+}
+
 /* tutorial */
 #tutorial-section {
   width: 1200px;

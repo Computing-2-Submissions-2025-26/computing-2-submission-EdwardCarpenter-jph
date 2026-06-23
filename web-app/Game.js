@@ -242,7 +242,7 @@ function heightDiff(game, from, to) {
     const b = getTile(game, ...to);
 
     if ((a === null) || (b === null)) {
-        console.log("Error: tile in heightDiff could not be obtained")
+        //console.log("Error: tile in heightDiff could not be obtained")
         return(0);
     };
 
@@ -257,6 +257,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 export function selectTile(game, x, z) {
     /*
     Selects a tile if it contains a character of the current player's team
+    Or deselects the tile if it is already selected
     Otherwise, the game state is returned with no changes
 
     @Param {object} game - the gamestate to select the tile on
@@ -266,13 +267,17 @@ export function selectTile(game, x, z) {
     @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
     */
 
-    const tile = getTile(game, x, z);
+  if (game.selected && isSameTile(game.selected, [x, z])) {
+    return { ...game, selected: null };
+  }
 
-    if (!tile || !tile.occupant) {return game;}
-    if (!isPlayer(tile.occupant)) {return game;}
-    if (tile.occupant.team !== game.currentPlayer) {return game;}
+  const tile = getTile(game, x, z);
+  if (!tile || !tile.occupant) {return game;}
+  if (!isPlayer(tile.occupant)) {return game;}
+  if (tile.occupant.team !== game.currentPlayer) {return game;}
 
-    return {...game,selected: [x, z]};
+  return {...game, selected: [x, z]};
+}
 }
 
 
@@ -291,7 +296,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 function cannotWalkTo(game, target) {
 
     if (!game.selected) {
-        console.log("Error! no tile selected.");
+        //console.log("Error! no tile selected.");
         return true;};
 
     if (!isAdjacent(game.selected, target)) {
@@ -383,6 +388,15 @@ function cloneGame(game) { // this function has been completely replaced by chat
     };
 }
 
+// this function came from Claude, Sonnet 4.6, and must be credited
+function withTile(grid, x, z, changes) {
+  return grid.map((column, cx) =>
+    cx === x
+      ? column.map((tile, cz) => (cz === z ? { ...tile, ...changes } : tile))
+      : column
+  );
+}
+
 function endTurn(game) {
 
     const nextTeam =
@@ -439,9 +453,9 @@ function actionDropRock(game, target) {
     mover.hasRock = false;
 
     if (isPlayer(targetTile.occupant)) {
-        console.log("Splat! this is where a splat sound might play if i have time to work that out");
+        //console.log("Splat! this is where a splat sound might play if i have time to work that out");
     } else {
-        console.log("Clang! this is where a splat sound might play if i have time to work that out");
+        //console.log("Clang! this is where a splat sound might play if i have time to work that out");
     }
 
     placeRock(targetTile);
@@ -465,7 +479,7 @@ function actionSelfSplat(game, target) {
         removeOccupant(fromTile);
     }
 
-  console.log("Self splat! cue Splat sound effect again");
+  //console.log("Self splat! cue Splat sound effect again");
 
   return endTurn(newGame);
 }
@@ -488,13 +502,13 @@ export function performAction(game, target) {
 
   // no selected tile
     if (!game.selected) {
-        console.log(game)
+        //console.log(game)
         return game;}
 
     const fromTile = getTile(game, ...game.selected);
 
     if (!fromTile || !isPlayer(fromTile.occupant)) {
-        console.log(game)
+        //console.log(game)
         return game;}
 
     const mover = fromTile.occupant;
@@ -507,7 +521,7 @@ export function performAction(game, target) {
         const winner = checkWinner(result);
 
         if (winner) {result.winner = winner;}
-    console.log(result)
+    //console.log(result)
     return result;}
 
     // DROP ROCK
@@ -517,7 +531,7 @@ export function performAction(game, target) {
         const winner = checkWinner(result);
 
         if (winner) {result.winner = winner;}
-    console.log(result)
+    //console.log(result)
     return result;}
 
   // DROP, WITH NOTHING (CHEESE WITH NOTHING?)
@@ -530,11 +544,41 @@ export function performAction(game, target) {
         if (winner) {
             result.winner = winner;}
 
-        console.log(result)
+        //console.log(result)
         return result;}
 
   // invalid action
-  console.log(game)
-  console.log("Invalid Action Attempted")
+  //console.log(game)
+  //console.log("Invalid Action Attempted")
   return game;
+}
+
+// this function is a modified version of some Claude code, and also needs to be credited.
+export function getValidTargets(game) {
+  /*
+  returns coordinates the current selection could legally act on
+  (walk, drop rock, or self-splat) — for rendering hints only
+
+  @param {object} game - the gamestate to check
+  @returns {array} targets - array of [x, z] pairs
+  */
+  if (!game.selected) {return [];}
+
+  const mover = getTile(game, ...game.selected).occupant;
+  const targets = [];
+
+  for (let x = 0; x < gridWidth; x += 1) {
+    for (let z = 0; z < gridDepth; z += 1) {
+      if (isSameTile([x, z], game.selected)) {continue;}
+
+      const diff = heightDiff(game, game.selected, [x, z]);
+      const validSelfSplat =
+        !mover.hasRock && diff < -2 && isAdjacent(game.selected, [x, z]);
+
+      if (!cannotWalkTo(game, [x, z]) || !cannotDropRockTo(game, [x, z]) || validSelfSplat) {
+        targets.push([x, z]);
+      }
+    }
+  }
+  return targets;
 }
