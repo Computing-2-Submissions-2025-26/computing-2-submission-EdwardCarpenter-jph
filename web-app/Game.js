@@ -75,6 +75,22 @@ export function getWinner(game) {
     return game.winner;
 }
 
+export function isLastGoon(game) {
+  /*
+  returns whether the current player has only one goon left: this is used in selection logic that prevents a specific softlock where a stuck player could never end their turn
+  as well as allowing a losing player to end their turn on their own terms.
+  (e.g. dropping their own rock on themselves to end the turn)
+
+  @param {object} game - the gamestate to check
+  @returns {boolean} true if the current player has exactly one character remaining
+  */
+  const count = game.grid.flat().filter(
+    tile => isPlayer(tile.occupant) && tile.occupant.team === game.currentPlayer
+  ).length;
+
+  return count <= 1;
+}
+
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         tile specific helpers
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
@@ -257,7 +273,9 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 export function selectTile(game, x, z) {
     /*
     Selects a tile if it contains a character of the current player's team
-    Or deselects the tile if it is already selected
+    Or deselects the tile if it is already selected, unless it is the
+    current player's last remaining goon, to preserve their ability to
+    self-eliminate instead of softlocking
     Otherwise, the game state is returned with no changes
 
     @Param {object} game - the gamestate to select the tile on
@@ -267,7 +285,7 @@ export function selectTile(game, x, z) {
     @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
     */
 
-  if (game.selected && isSameTile(game.selected, [x, z])) {
+  if (game.selected && isSameTile(game.selected, [x, z]) && !isLastGoon(game)) {
     return { ...game, selected: null };
   }
 

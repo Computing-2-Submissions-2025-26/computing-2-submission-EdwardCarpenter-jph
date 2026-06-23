@@ -5,7 +5,8 @@ import {
   getTile,
   getCurrentPlayer,
   getWinner,
-  getValidTargets
+  getValidTargets,
+  isLastGoon
 } from "./game.js";
 
 const boardElement = document.getElementById("board");
@@ -252,10 +253,9 @@ function renderTopTile(tile, x, z, row) {
   const div = document.createElement("button");
 
   div.classList.add("tile");
+  
+  const isValidTarget = validTargets.some(([vx, vz]) => vx === x && vz === z);
 
-  if (validTargets.some(([vx, vz]) => vx === x && vz === z)) {
-    div.classList.add("valid-target");
-  }
 
   div.style.gridColumn = x + 1;
   div.style.gridRow = row + 1;
@@ -272,9 +272,12 @@ function renderTopTile(tile, x, z, row) {
 
   const saturation = 1 // tried this, didn't work great
     //2.0 - (z * 0.5);
+const validFilter = isValidTarget
+    ? " sepia(0.6) saturate(2.5) hue-rotate(20deg)"
+    : "";
 
   div.style.filter =
-    `brightness(${brightness}) contrast(${contrast})`;
+    `brightness(${brightness}) contrast(${contrast})${validFilter}`;
 
   let sprite = "Blanktop.png";
 
@@ -447,7 +450,14 @@ function handleTileClick(x, z) {
     tile.occupant.type === "character" &&
     tile.occupant.team === getCurrentPlayer(game);
 
-  if (game.selected && (clickedOwnCharacter || (x === selected.x && z === selected.z))) {
+  const clickedSelectedTile =
+    game.selected && x === selected.x && z === selected.z;
+
+  if (clickedSelectedTile && isLastGoon(game)) {
+    // last goon: same-tile click attempts an action instead of deselecting,
+    // so they can still self-eliminate (e.g. drop their own rock) and end their turn
+    game = performAction(game, [x, z]);
+  } else if (game.selected && (clickedOwnCharacter || clickedSelectedTile)) {
     game = selectTile(game, x, z);
   } else if (game.selected) {
     game = performAction(game, [x, z]);
