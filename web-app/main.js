@@ -257,7 +257,7 @@ function renderTopTile(tile, x, z, row) {
   
   const isValidTarget = validTargets.some(([vx, vz]) => vx === x && vz === z);
 
-  div.classList.toggle("valid-target", isValidTarget);
+  div.classList.toggle("valid-target", isValidTarget); // accessibility helper for tritanopic and achromatopic users
   
   div.style.gridColumn = x + 1;
   div.style.gridRow = row + 1;
