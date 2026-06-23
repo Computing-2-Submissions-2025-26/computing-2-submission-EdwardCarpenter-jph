@@ -19,8 +19,8 @@ I'll run the same commands when I download your repos.
 
 - [X] Include a `.js ` module file in `/web-app` containing the API using `jsdoc`.
 - [X] Update `/jsdoc.json` to point to this module in `.source.include` (line 7)
-- [ ] Compile jsdoc using the run configuration `Generate Docs`
-- [ ] Check the generated docs have compiled correctly.
+- [X] Compile jsdoc using the run configuration `Generate Docs`
+- [X] Check the generated docs have compiled correctly.
 
 ### Game Module – Implementation
 *You will implement, in Javascript, the module you specified above. Such that your game can be simulated in code, e.g. in the debug console.*
@@ -48,6 +48,6 @@ I'll run the same commands when I download your repos.
   - [X] Any other files you need to include.
 
 ### Finally
-- [ ] Push to GitHub.
-- [ ] Sync the changes.
+- [X] Push to GitHub.
+- [X] Sync the changes.
 - [ ] Check submission on GitHub website.

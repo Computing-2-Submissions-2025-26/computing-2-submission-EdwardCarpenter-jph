@@ -1,4 +1,51 @@
-// game.js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Game.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-game.html">game</a><ul class='methods'><li data-type='method'><a href="module-game.html#.getCurrentPlayer">getCurrentPlayer</a></li><li data-type='method'><a href="module-game.html#.getGrid">getGrid</a></li><li data-type='method'><a href="module-game.html#.getTile">getTile</a></li><li data-type='method'><a href="module-game.html#.getValidTargets">getValidTargets</a></li><li data-type='method'><a href="module-game.html#.getWinner">getWinner</a></li><li data-type='method'><a href="module-game.html#.initGame">initGame</a></li><li data-type='method'><a href="module-game.html#.isLastGoon">isLastGoon</a></li><li data-type='method'><a href="module-game.html#.performAction">performAction</a></li><li data-type='method'><a href="module-game.html#.selectTile">selectTile</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Game.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// game.js
 
 /**
  * game state module for the tile based game, does not contain rendering code
@@ -26,7 +73,7 @@ function randomInt(min, max) { // makes random into a more intuitive format
 }
 
 function isSameTile(a, b) { // can't just do array === array because javascript is cringe
-    return a[0] === b[0] && a[1] === b[1];
+    return a[0] === b[0] &amp;&amp; a[1] === b[1];
 }
 
 function isTaken(taken, tile) { // .some checks an array to see if *any*
@@ -50,7 +97,7 @@ function isAdjacent(a, b) {
 
     const adjDist = Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
 
-    return (adjDist <= 1.5);
+    return (adjDist &lt;= 1.5);
 }
 
 /**
@@ -83,10 +130,10 @@ export function getWinner(game) {
 */
 export function isLastGoon(game) {
   const count = game.grid.flat().filter(
-    tile => isPlayer(tile.occupant) && tile.occupant.team === game.currentPlayer
+    tile => isPlayer(tile.occupant) &amp;&amp; tile.occupant.team === game.currentPlayer
   ).length;
 
-  return count <= 1;
+  return count &lt;= 1;
 }
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -105,10 +152,10 @@ function createTile() {
 // checks if the occupant type is player
 // this is much more readable than the alternative
 function isPlayer(occupant) {
-    return occupant && occupant.type === "character";
+    return occupant &amp;&amp; occupant.type === "character";
 }
 function isRock(occupant) {
-    return occupant && occupant.type === "rock";
+    return occupant &amp;&amp; occupant.type === "rock";
 }
 
 function removeOccupant(tile) { // this is something suggested by chatgpt.
@@ -138,13 +185,13 @@ function createEmptyGrid() { // this function mistakenly wasn't labelled as ai o
 }
 
 function generateHeights(grid) {
-    for (let x = 0; x < gridWidth; x += 1) {
+    for (let x = 0; x &lt; gridWidth; x += 1) {
 
         // first row
         grid[x][0].height = randomInt(0, 2);
 
         // rest of column
-        for (let z = 1; z < gridDepth; z += 1) {
+        for (let z = 1; z &lt; gridDepth; z += 1) {
 
             const prevHeight = grid[x][z - 1].height;
 
@@ -178,7 +225,7 @@ function placePlayers(grid) {
 
         let count = 0;
 
-        while (count < 3) { // NOTE: THIS IS WHERE I WOULD CHANGE THE CHAR COUNT
+        while (count &lt; 3) { // NOTE: THIS IS WHERE I WOULD CHANGE THE CHAR COUNT
 
             const tile = randomTile();
 
@@ -278,7 +325,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 * @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
 */
 export function selectTile(game, x, z) {
-  if (game.selected && isSameTile(game.selected, [x, z]) && !isLastGoon(game)) {
+  if (game.selected &amp;&amp; isSameTile(game.selected, [x, z]) &amp;&amp; !isLastGoon(game)) {
     return { ...game, selected: null };
   }
 
@@ -326,13 +373,13 @@ function cannotWalkTo(game, target) {
         return true;}
 
     // cannot move onto a rock if already holding one
-    if (isRock(targetOccupant) && mover.hasRock) {
+    if (isRock(targetOccupant) &amp;&amp; mover.hasRock) {
         return true;};
 
   const diff = heightDiff(game, game.selected, target);
 
   // cannot move down more than 2
-  if (diff < -2) {return true;}
+  if (diff &lt; -2) {return true;}
 
   // climb restrictions
     if (mover.hasRock) {
@@ -419,8 +466,8 @@ function endTurn(game) {
 
 function checkWinner(game) {
     const allTiles = game.grid.flat();
-    const redAlive = allTiles.some(tile => isPlayer(tile.occupant) && tile.occupant.team === "red");
-    const blueAlive = allTiles.some(tile => isPlayer(tile.occupant) && tile.occupant.team === "blue");
+    const redAlive = allTiles.some(tile => isPlayer(tile.occupant) &amp;&amp; tile.occupant.team === "red");
+    const blueAlive = allTiles.some(tile => isPlayer(tile.occupant) &amp;&amp; tile.occupant.team === "blue");
 
     if (!redAlive) return "blue";
     if (!blueAlive) return "red";
@@ -544,7 +591,7 @@ export function performAction(game, target) {
 
   // DROP, WITH NOTHING (CHEESE WITH NOTHING?)
 
-    if (!mover.hasRock && diff < -2) { // exception case to not being able to move or drop rock
+    if (!mover.hasRock &amp;&amp; diff &lt; -2) { // exception case to not being able to move or drop rock
 
         const result = actionSelfSplat(game, target);
         const winner = checkWinner(result);
@@ -575,13 +622,13 @@ export function getValidTargets(game) {
   const mover = getTile(game, ...game.selected).occupant;
   const targets = [];
 
-  for (let x = 0; x < gridWidth; x += 1) {
-    for (let z = 0; z < gridDepth; z += 1) {
+  for (let x = 0; x &lt; gridWidth; x += 1) {
+    for (let z = 0; z &lt; gridDepth; z += 1) {
       if (isSameTile([x, z], game.selected)) {continue;}
 
       const diff = heightDiff(game, game.selected, [x, z]);
       const validSelfSplat =
-        !mover.hasRock && diff < -2 && isAdjacent(game.selected, [x, z]);
+        !mover.hasRock &amp;&amp; diff &lt; -2 &amp;&amp; isAdjacent(game.selected, [x, z]);
 
       if (!cannotWalkTo(game, [x, z]) || !cannotDropRockTo(game, [x, z]) || validSelfSplat) {
         targets.push([x, z]);
@@ -589,4 +636,30 @@ export function getValidTargets(game) {
     }
   }
   return targets;
-}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Tue Jun 23 2026 14:38:23 GMT+0100 (British Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+    <link type="text/css" rel="stylesheet" href="custom.css">
+    
+</body>
+</html>
