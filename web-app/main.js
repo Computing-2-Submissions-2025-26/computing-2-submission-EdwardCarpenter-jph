@@ -262,15 +262,15 @@ function renderTopTile(tile, x, z, row) {
 
   div.style.zIndex = 2;
 
-  const brightness = 0.4 + (tile.height * 0.3);
+  const brightness = 0.5 + (tile.height * 0.25);
 
   /*
     Front rows more contrasted.
     Back rows more washed out.
   */
-  const contrast = 1.5 - (z * 0.3);
+  const contrast = 1.5 - (z * 0.4);
 
-  const saturation = 1 // tried this, didn't work great
+  //const saturation = 1 // tried this, didn't work great
     //2.0 - (z * 0.5);
 const validFilter = isValidTarget
     ? " sepia(0.6) saturate(2.5) hue-rotate(20deg)"

@@ -54,36 +54,35 @@ function isAdjacent(a, b) {
     return (adjDist <= 1.5);
 }
 
-
+/**
+* Returns the grid from the game state, for use in rendering and tests.
+*
+* @param {object} game - The game state to get the grid from
+* @returns {array} The grid from the game state
+*/
 export function getGrid(game) {
-    /* 
-    returns the grid from the gamestate, for use in rendering and tests
-
-    @Param {object} game - the gamestate to get the grid from
-    @returns {array} grid - the grid from the gamestate
-    */
     return game.grid;
 }
 
-export function getWinner(game) {
-    /*
-    returns the winner of the game
+/**
+* Returns the winner of the game
 
-    @Param {object} game - the gamestate to check for a winner
-    @returns {string|null} winner - the team that has won, or null if there is no winner
-    */
+* @param {object} game - the gamestate to check for a winner
+* @returns {string|null} winner - the team that has won, or null if there is no winner
+*/
+export function getWinner(game) {
     return game.winner;
 }
 
-export function isLastGoon(game) {
-  /*
-  returns whether the current player has only one goon left: this is used in selection logic that prevents a specific softlock where a stuck player could never end their turn
-  as well as allowing a losing player to end their turn on their own terms.
-  (e.g. dropping their own rock on themselves to end the turn)
+/**
+* returns whether the current player has only one goon left: this is used in selection logic that prevents a specific softlock where a stuck player could never end their turn
+* as well as allowing a losing player to end their turn on their own terms.
+* (e.g. dropping their own rock on themselves to end the turn)
 
-  @param {object} game - the gamestate to check
-  @returns {boolean} true if the current player has exactly one character remaining
-  */
+* @param {object} game - the gamestate to check
+* @returns {boolean} true if the current player has exactly one character remaining
+*/
+export function isLastGoon(game) {
   const count = game.grid.flat().filter(
     tile => isPlayer(tile.occupant) && tile.occupant.team === game.currentPlayer
   ).length;
@@ -205,15 +204,14 @@ function placePlayers(grid) {
     initialise game (export functions)
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
+/**
+* Creates a new random grid as the playspace.
+* - Each tile is given a height, on a slope such that information is not concealed
+* - initial positions of players are set randomly
+*
+* @returns {object} game - the initial gamestate
+*/
 export function initGame() {
-    /*
-    Creates a new random grid as the playspace.
-    - Each tile is given a height, on a slope such that information is not concealed
-    - initial positions of players are set randomly
-
-    @returns {object} game - the initial gamestate
-    */
-
     const grid = createEmptyGrid();
 
     generateHeights(grid);
@@ -222,33 +220,30 @@ export function initGame() {
     return {grid,currentPlayer: "red",selected: null,winner: null};
 }
 
-
-export function getTile(game, x, z) {
-    /*
-    Returns the tile at the coordinates if it exists
+/**
+Returns the tile at the coordinates if it exists
     
-    @Param {object} game - the gamestate to get the tile from
-    @Param {number} x - the x coordinate of the tile
-    @Param {number} z - the z coordinate of the tile
+* @param {object} game - the gamestate to get the tile from
+* @param {number} x - the x coordinate of the tile
+* @param {number} z - the z coordinate of the tile
 
-    @returns {object|null} tile - the tile at the coordinates, or null if it doesn't exist
-    */
-
-
+* @returns {object|null} tile - the tile at the coordinates, or null if it doesn't exist
+*/
+export function getTile(game, x, z) {
     if (!game.grid[x] || !game.grid[x][z]) { // inbuilt error catcher! makes sure the tile exists.
         return null;
     }
     return game.grid[x][z];
 }
 
+/**
+* returns the current player from the gamestate for use in rendering and tests
+
+* @param {object} game - the gamestate to get the current player from
+
+* @returns {string} currentPlayer - the team of the current player
+*/
 export function getCurrentPlayer(game) {
-    /*
-    returns the current player from the gamestate for use in rendering and tests
-
-    @Param {object} game - the gamestate to get the current player from
-
-    @returns {string} currentPlayer - the team of the current player
-    */
     return game.currentPlayer; // returns the property controlling the current player
 }
 
@@ -270,21 +265,20 @@ function heightDiff(game, from, to) {
     selection
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
+/**
+* Selects a tile if it contains a character of the current player's team
+* Or deselects the tile if it is already selected, unless it is the
+* current player's last remaining goon, to preserve their ability to
+* self-eliminate instead of softlocking
+* Otherwise, the game state is returned with no changes
+
+* @Param {object} game - the gamestate to select the tile on
+* @Param {number} x - the x coordinate of the tile to select
+* @Param {number} z - the z coordinate of the tile to select
+*
+* @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
+*/
 export function selectTile(game, x, z) {
-    /*
-    Selects a tile if it contains a character of the current player's team
-    Or deselects the tile if it is already selected, unless it is the
-    current player's last remaining goon, to preserve their ability to
-    self-eliminate instead of softlocking
-    Otherwise, the game state is returned with no changes
-
-    @Param {object} game - the gamestate to select the tile on
-    @Param {number} x - the x coordinate of the tile to select
-    @Param {number} z - the z coordinate of the tile to select
-
-    @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
-    */
-
   if (game.selected && isSameTile(game.selected, [x, z]) && !isLastGoon(game)) {
     return { ...game, selected: null };
   }
@@ -505,18 +499,16 @@ function actionSelfSplat(game, target) {
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             Actions RESOLVER
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
-
+/**
+* Resolves an attempted action depending on it's context; 
+* different actions map to different moves depending on the nature of the target
+*  
+* @param {object} game - the gamestate to perform the action on
+* @param {array} target - the coordinates of the tile to perform the action on
+*
+* @returns {object} game - the new gamestate after the action is performed, or unchanged if the action was invalid
+*/
 export function performAction(game, target) {
-    /*
-    Resolves an attempted action depending on it's context; 
-    different actions map to different moves depending on the nature of the target
-    
-    @Param {object} game - the gamestate to perform the action on
-    @Param {array} target - the coordinates of the tile to perform the action on
-
-    @returns {object} game - the new gamestate after the action is performed, or unchanged if the action was invalid
-    */
-
   // no selected tile
     if (!game.selected) {
         //console.log(game)
@@ -570,15 +562,15 @@ export function performAction(game, target) {
   return game;
 }
 
-// this function is a modified version of some Claude code, and also needs to be credited.
+// (this function is a modified version of some Claude code, and also needs to be credited.)
+/**
+* returns coordinates the current selection could legally act on
+* (walk, drop rock, or self-splat) — for rendering hints only
+*
+* @param {object} game - the gamestate to check
+* @returns {array} targets - array of [x, z] pairs
+*/
 export function getValidTargets(game) {
-  /*
-  returns coordinates the current selection could legally act on
-  (walk, drop rock, or self-splat) — for rendering hints only
-
-  @param {object} game - the gamestate to check
-  @returns {array} targets - array of [x, z] pairs
-  */
   if (!game.selected) {return [];}
 
   const mover = getTile(game, ...game.selected).occupant;
