@@ -4,7 +4,8 @@ import {
   performAction,
   getTile,
   getCurrentPlayer,
-  getWinner
+  getWinner,
+  getValidTargets
 } from "./game.js";
 
 const boardElement = document.getElementById("board");
@@ -13,6 +14,21 @@ const redWinnerDisplay = document.getElementById("red-winner-display");
 const blueTurnDisplay = document.getElementById("blue-turn-display");
 const blueWinnerDisplay = document.getElementById("blue-winner-display");
 const resetButton = document.getElementById("reset-button");
+
+// preload sprites
+const ALL_SPRITES = [
+  "Blanktop.png", "WeightTile.png",
+  "RedtopLook.png", "RedtopAttend.png",
+  "RedtopWeightLook.png", "RedtopWeightAttend.png",
+  "BluetopLook.png", "BluetopAttend.png",
+  "BlueTopWeightLook.png", "BluetopWeightAttend.png",
+  "BrickTrans.png", "BrickStep.png", "BrickTop.png", "BrickBottom.png"
+];
+
+ALL_SPRITES.forEach(src => {
+  const img = new Image();
+  img.src = `./assets/tile/${src}`;
+});
 
 /*
   Accessibility, ai section
@@ -41,6 +57,7 @@ const DEPTH = 4;//4
 const VISUAL_ROWS = 12;
 
 let selected = null;
+let validTargets = [];
 
 let game = initGame();
 
@@ -55,7 +72,7 @@ render();
 
 function render() { // this section wasn't originally written by ai
   
-  const validTargets = getValidTargets(game);
+  validTargets = getValidTargets(game);
   
   boardElement.innerHTML = "";
 
@@ -225,20 +242,20 @@ function createSprite(src) {
   img.classList.add("tile-sprite");
   img.src = `./assets/tile/${src}`;
 
-  img.alt = "image described in corresponding button's aria-label";
+  img.alt = "";
 
   return img;
 }
 
 function renderTopTile(tile, x, z, row) {
 
-  if (validTargets.some(([vx, vz]) => vx === x && vz === z)) {
-  div.classList.add("valid-target");
-}
-
   const div = document.createElement("button");
 
   div.classList.add("tile");
+
+  if (validTargets.some(([vx, vz]) => vx === x && vz === z)) {
+    div.classList.add("valid-target");
+  }
 
   div.style.gridColumn = x + 1;
   div.style.gridRow = row + 1;
@@ -319,7 +336,7 @@ div.setAttribute("aria-label", label);
 
         sprite = isSelected
           ? "RedtopAttend.png"
-          : "RedtopLookpng.png";
+          : "RedtopLook.png";
       }
     }
 

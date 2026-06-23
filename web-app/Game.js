@@ -278,7 +278,6 @@ export function selectTile(game, x, z) {
 
   return {...game, selected: [x, z]};
 }
-}
 
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
