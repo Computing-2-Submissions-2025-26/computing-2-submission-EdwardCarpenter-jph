@@ -271,9 +271,9 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 * self-eliminate instead of softlocking
 * Otherwise, the game state is returned with no changes
 
-* @Param {object} game - the gamestate to select the tile on
-* @Param {number} x - the x coordinate of the tile to select
-* @Param {number} z - the z coordinate of the tile to select
+* @param {object} game - the gamestate to select the tile on
+* @param {number} x - the x coordinate of the tile to select
+* @param {number} z - the z coordinate of the tile to select
 *
 * @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
 */

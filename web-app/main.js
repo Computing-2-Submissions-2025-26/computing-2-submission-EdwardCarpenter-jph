@@ -218,6 +218,7 @@ function render() { // this section wasn't originally written by ai
   }
 }
 
+/* unimplemented sky tile code; background was preferred.
 function renderSky() {
 
   for (let row = 1; row <= VISUAL_ROWS; row++) {
@@ -235,7 +236,7 @@ function renderSky() {
       boardElement.appendChild(sky);
     }
   }
-}
+}*/
 
 function createSprite(src) {
   const img = document.createElement("img");
@@ -256,7 +257,8 @@ function renderTopTile(tile, x, z, row) {
   
   const isValidTarget = validTargets.some(([vx, vz]) => vx === x && vz === z);
 
-
+  div.classList.toggle("valid-target", isValidTarget);
+  
   div.style.gridColumn = x + 1;
   div.style.gridRow = row + 1;
 
@@ -405,8 +407,9 @@ div.setAttribute("aria-label", label);
   boardElement.appendChild(div);
 }
 
+/* more unimplemented sky tile code
 function renderSkyTile(x, row) {
-}
+}*/
 
 function renderSideTile(
   x,
@@ -454,8 +457,9 @@ function handleTileClick(x, z) {
     game.selected && x === selected.x && z === selected.z;
 
   if (clickedSelectedTile && isLastGoon(game)) {
-    // last goon: same-tile click attempts an action instead of deselecting,
-    // so they can still self-eliminate (e.g. drop their own rock) and end their turn
+    // this is more game logic adjacent than may be preferable, but it's a UX issue that was simpler to fix on this end
+    // i initially had deselecting impossible as a deliberate part of the game, since it led to humerous game situations,
+    // however, many users including my peer reviewer simply found it irritating, so i replaced it.
     game = performAction(game, [x, z]);
   } else if (game.selected && (clickedOwnCharacter || clickedSelectedTile)) {
     game = selectTile(game, x, z);
