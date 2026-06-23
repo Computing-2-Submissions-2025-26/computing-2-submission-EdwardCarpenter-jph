@@ -1,5 +1,7 @@
 // game.js
 
+"use strict";
+
 /**
  * game state module for the tile based game, does not contain rendering code
  *
@@ -18,7 +20,7 @@ const gridDepth = 4; //4
 
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        general helpers
+        general helpess
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 function randomInt(min, max) { // makes random into a more intuitive format
@@ -32,22 +34,10 @@ function isSameTile(a, b) { // can't just do array === array because javascript 
 function isTaken(taken, tile) { // .some checks an array to see if *any*
     // elements pass the condition
     // this is an arrow function using t as an argument.
-    return taken.some(t => isSameTile(t, tile));
+    return taken.some((t) => isSameTile(t, tile));
 }
 
 function isAdjacent(a, b) {
-    // checks on x and z. could expand this bit later, note to self
-    //const isAdjacent = false;
-    
-    //const dx = Math.abs(a[0] - b[0]); // adjacent on x
-    //const dz = Math.abs(a[1] - b[1]); // adjacent on y
-
-    //isAdjacent = dx + dz === 1
-
-    // want to add diagonals:
-    // in a diagonal or adjacent tile but *not* in a non-adjacent tile the distance will be less than root 2
-    // which i can make 1.5 since the issue threshold is higher.
-
     const adjDist = Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
 
     return (adjDist <= 1.5);
@@ -221,7 +211,6 @@ export function initGame() {
 
 /**
 Returns the tile at the coordinates if it exists
-    
 * @param {object} game - the gamestate to get the tile from
 * @param {number} x - the x coordinate of the tile
 * @param {number} z - the z coordinate of the tile
@@ -295,14 +284,6 @@ export function selectTile(game, x, z) {
     movement validation
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
-// if selected character has a rock:
-// - can climb +1
-// - can descend -2 EDIT: now given to the rock drop function
-//
-// if selected character has no rock:
-// - can climb +3
-// - can descend -2
-
 function cannotWalkTo(game, target) {
 
     if (!game.selected) {
@@ -374,7 +355,7 @@ function cannotDropRockTo(game, target) {
         return diff > 0;}
 
     // dropping rock downward
-    return diff >= -2; // 
+    return diff >= -2;
 }
 
 
@@ -445,7 +426,7 @@ function actionMove(game, target) {
     // pick up rock if there are rocks to be picked
     if (isRock(targetTile.occupant)) {
         mover.hasRock = true; // NOTE TO SELF: this is fine, because if mover already has a rock they can't move here!
-    } 
+    }
 
     moveOccupant(fromTile, targetTile);
     return endTurn(newGame);
@@ -499,9 +480,9 @@ function actionSelfSplat(game, target) {
             Actions RESOLVER
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 /**
-* Resolves an attempted action depending on it's context; 
+* Resolves an attempted action depending on it's context;
 * different actions map to different moves depending on the nature of the target
-*  
+*
 * @param {object} game - the gamestate to perform the action on
 * @param {array} target - the coordinates of the tile to perform the action on
 *

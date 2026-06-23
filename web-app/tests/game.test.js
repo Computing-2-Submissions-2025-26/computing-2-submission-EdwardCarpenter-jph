@@ -52,8 +52,6 @@ describe("does two plus two equal four?", () => {
 });
 
 // selection test
-// "never trust a test you haven't seen fail" and all
-// but the null one failed before fixing, which is good enough for me.
 
 describe("Selection", () => {
 
@@ -83,17 +81,7 @@ describe("Selection", () => {
 
 });
 
-// Movement Tests: movement not yet implemented, but I'll want to test:
-
-// - can the player move to tile they should be able to?
-//      can the player move to an adjacent tile of the same height?
-//      can the player move to an adjacent tile that is one higher?
-//      can the player move to an adjacent tile that is one lower?
-
-// - can the player *not* move to a tile they shouldn't be able to? ALL FALSE?
-//      can a player with a rock move to a tile that is more than one higher?
-//      can a player with no rock move to a tile that is more than three higher?
-//      can a player move to a non-adjacent tile? 
+// Movement Tests:
 
 describe("Movement", () => {
 
@@ -150,6 +138,20 @@ describe("Movement", () => {
     expect(result.grid[0][1].occupant.team).toBe("red");
   });
 
+  it("goon can move to diagonally adjacent tile of same height?", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].height = 1;
+    game.grid[1][1].height = 1;
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [1, 1]);
+
+    expect(result.grid[1][1].occupant.team).toBe("red");
+    expect(result.grid[0][0].occupant).toBe(null);
+  });
+
 });
 
 // Rock and Splat Tests: this is kind of part of movement, but i'm still separating it.
@@ -201,6 +203,22 @@ describe("Rock actions", () => {
 
     expect(result.grid[1][0].occupant.type).toBe("rock");
     expect(result.grid[0][0].occupant.hasRock).toBe(true);
+  });
+
+    it("will pick up a rock if don't have rock and am stepping onto rock tile", () => {
+    const game = makeTestGame();
+
+    game.grid[0][0].occupant.hasRock = false;
+    game.grid[0][0].height = 1;
+    game.grid[0][1].height = 1;
+    game.grid[0][1].occupant = { type: "rock" };
+
+    const selected = selectTile(game, 0, 0);
+
+    const result = performAction(selected, [0, 1]);
+
+    expect(result.grid[0][1].occupant.type).toBe("character");
+    expect(result.grid[0][1].occupant.hasRock).toBe(true);
   });
 
 });

@@ -26,7 +26,7 @@ const ALL_SPRITES = [
   "BrickTrans.png", "BrickStep.png", "BrickTop.png", "BrickBottom.png"
 ];
 
-ALL_SPRITES.forEach(src => {
+ALL_SPRITES.forEach((src) => {
   const img = new Image();
   img.src = `./assets/tile/${src}`;
 });
@@ -72,9 +72,7 @@ render();
 
 
 function render() { // this section wasn't originally written by ai
-  
   validTargets = getValidTargets(game);
-  
   boardElement.innerHTML = "";
 
   const backgroundFog = document.createElement("img");
@@ -217,26 +215,6 @@ function render() { // this section wasn't originally written by ai
     }
   }
 }
-
-/* unimplemented sky tile code; background was preferred.
-function renderSky() {
-
-  for (let row = 1; row <= VISUAL_ROWS; row++) {
-
-    for (let col = 1; col <= WIDTH; col++) {
-
-      const sky = document.createElement("div");
-
-      sky.classList.add("tile");
-      sky.classList.add("sky");
-
-      sky.style.gridColumn = col;
-      sky.style.gridRow = row;
-
-      boardElement.appendChild(sky);
-    }
-  }
-}*/
 
 function createSprite(src) {
   const img = document.createElement("img");
@@ -406,10 +384,6 @@ div.setAttribute("aria-label", label);
 
   boardElement.appendChild(div);
 }
-
-/* more unimplemented sky tile code
-function renderSkyTile(x, row) {
-}*/
 
 function renderSideTile(
   x,
