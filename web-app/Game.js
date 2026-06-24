@@ -20,14 +20,14 @@ const gridDepth = 4; //4
 
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        general helpess
+        general helpers
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 function randomInt(min, max) { // makes random into a more intuitive format
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function isSameTile(a, b) { // can't just do array === array because javascript is cringe
+function isSameTile(a, b) {
     return a[0] === b[0] && a[1] === b[1];
 }
 
@@ -49,19 +49,20 @@ function isAdjacent(a, b) {
 * @param {object} game - The game state to get the grid from
 * @returns {array} The grid from the game state
 */
-export function getGrid(game) {
+export const getGrid = Object.freeze(function (game) {
     return game.grid;
-}
+});
 
 /**
 * Returns the winner of the game
 
 * @param {object} game - the gamestate to check for a winner
-* @returns {string|null} winner - the team that has won, or null if there is no winner
+* @returns {string|null} winner - the team that has won,
+* or null if there is no winner
 */
-export function getWinner(game) {
+export const getWinner = Object.freeze(function (game) {
     return game.winner;
-}
+});
 
 /**
 * returns whether the current player has only one goon left: this is used in selection logic that prevents a specific softlock where a stuck player could never end their turn

@@ -210,7 +210,7 @@ button:focus { /* keyboard focus improved for simpler keyboard navigation; thick
 #ai-disclosure {
   margin-top: -110px;
   padding:30px;
-  line-height:1.5px;
+  line-height:15px;
   text-align:left;
   color: #999;
 }
