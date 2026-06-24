@@ -8,7 +8,7 @@ This web-app functions fully on my laptop, and my peer reviewer also had no issu
 
 It seems likely to me that this is due to an issue with how I was opening the app, rather than with the web-app itself, and this won't be a problem on your end. However, as a backup I have attatched an mp4 screen recording demonstrating the functioning webpage:
 
-https://file.garden/adL34C2aS3ylDLdd/Imperial%20Transfers/DemoVideo%20(1).mp4
+https://file.garden/adL34C2aS3ylDLdd/Imperial%20Transfers/DownTown%20-%20Gameplay%20Demonstration.mp4
 
 ### Installation
 
