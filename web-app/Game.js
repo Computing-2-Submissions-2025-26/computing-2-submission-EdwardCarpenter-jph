@@ -49,7 +49,7 @@ function isAdjacent(a, b) {
 * @param {object} game - The game state to get the grid from
 * @returns {array} The grid from the game state
 */
-export const getGrid = Object.freeze(function (game) {
+export const getGrid = Object.freeze(function getGrid(game) {
     return game.grid;
 });
 
@@ -60,25 +60,32 @@ export const getGrid = Object.freeze(function (game) {
 * @returns {string|null} winner - the team that has won,
 * or null if there is no winner
 */
-export const getWinner = Object.freeze(function (game) {
+export const getWinner = Object.freeze(function getWinner(game) {
     return game.winner;
 });
 
 /**
-* returns whether the current player has only one goon left: this is used in selection logic that prevents a specific softlock where a stuck player could never end their turn
+* returns whether the current player has only one goon left:
+* this is used in selection logic that prevents a specific softlock
+* where a single stuck player could never end their turn
 * as well as allowing a losing player to end their turn on their own terms.
 * (e.g. dropping their own rock on themselves to end the turn)
 
 * @param {object} game - the gamestate to check
-* @returns {boolean} true if the current player has exactly one character remaining
+* @returns {boolean} true if the current player has 1 goon remaining
 */
-export function isLastGoon(game) {
+const isLastGoon = Object.freeze(function isLastGoon(game) {
   const count = game.grid.flat().filter(
-    tile => isPlayer(tile.occupant) && tile.occupant.team === game.currentPlayer
+    (tile) =>
+      isPlayer(tile.occupant) &&
+      tile.occupant.team === game.currentPlayer
   ).length;
 
   return count <= 1;
-}
+}); // this function was rewritten by VSCode's built-in AI to resolve
+// a linter error.
+
+export { isLastGoon };
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         tile specific helpers
@@ -88,7 +95,8 @@ function createTile() {
     // create a blank tile with no height and null as the occupant
     return {
     height: 0,
-    occupant: null // may later become { team: "red"/"blue", hasRock: true/false }. null is treated as "empty"
+    occupant: null // can become { team: "red"/"blue", hasRock: true/false }.
+    // null is treated as "empty"
   };
 }
 
@@ -103,7 +111,8 @@ function isRock(occupant) {
 }
 
 function removeOccupant(tile) { // this is something suggested by chatgpt.
-  tile.occupant = null; // allows for removing an occupant without mutating the array
+  tile.occupant = null; // allows for removing an occupant
+  // without mutating the array
 } // note: also removes rocks! don't forget that
 
 function placeRock(tile) {
@@ -122,8 +131,9 @@ function moveOccupant(fromTile, toTile) {
         grid generation
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
-function createEmptyGrid() { // this function mistakenly wasn't labelled as ai originally but it is
-    return Array.from({ length: gridWidth }, () => // i wrote a version of this before, but this does it in less space
+function createEmptyGrid() { // this function must be partially credited to
+    // ChatGPT, more details in the AI disclosure.
+    return Array.from({ length: gridWidth }, () =>
         Array.from({ length: gridDepth }, () => createTile())
 );
 }
@@ -140,7 +150,7 @@ function generateHeights(grid) {
             const prevHeight = grid[x][z - 1].height;
 
             // ensure it doesn't go down (essential for visuals pass!)
-            let newHeight = randomInt(prevHeight, prevHeight + 2);// floor at prev, goes up to 2
+            let newHeight = randomInt(prevHeight, prevHeight + 2);
             if (newHeight >= 8) {
                 newHeight = 7;
             };
@@ -196,7 +206,8 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 /**
 * Creates a new random grid as the playspace.
-* - Each tile is given a height, on a slope such that information is not concealed
+* - Each tile is given a height, on a slope
+*   such that information is not concealed
 * - initial positions of players are set randomly
 *
 * @returns {object} game - the initial gamestate
@@ -216,10 +227,10 @@ Returns the tile at the coordinates if it exists
 * @param {number} x - the x coordinate of the tile
 * @param {number} z - the z coordinate of the tile
 
-* @returns {object|null} tile - the tile at the coordinates, or null if it doesn't exist
+* @returns {object|null} tile - the tile at the coordinates, or null if error
 */
 export function getTile(game, x, z) {
-    if (!game.grid[x] || !game.grid[x][z]) { // inbuilt error catcher! makes sure the tile exists.
+    if (!game.grid[x] || !game.grid[x][z]) {
         return null;
     }
     return game.grid[x][z];
@@ -233,12 +244,13 @@ export function getTile(game, x, z) {
 * @returns {string} currentPlayer - the team of the current player
 */
 export function getCurrentPlayer(game) {
-    return game.currentPlayer; // returns the property controlling the current player
+    // returns the property controlling the current player
+    return game.currentPlayer;
 }
 
 function heightDiff(game, from, to) {
 // determine height difference
-    const a = getTile(game, ...from); // remember ... lets me get both coordinates
+    const a = getTile(game, ...from);
     const b = getTile(game, ...to);
 
     if ((a === null) || (b === null)) {
@@ -265,7 +277,8 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 * @param {number} x - the x coordinate of the tile to select
 * @param {number} z - the z coordinate of the tile to select
 *
-* @returns {object} game - the gamestate with the selected tile, or unchanged if selection was invalid
+* @returns {object} game - the gamestate with the selected tile,
+* or unchanged if selection was invalid
 */
 export function selectTile(game, x, z) {
   if (game.selected && isSameTile(game.selected, [x, z]) && !isLastGoon(game)) {
@@ -364,8 +377,8 @@ function cannotDropRockTo(game, target) {
     rock drop validation
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
-function cloneGame(game) { // this function has been completely replaced by chatgpt
-    return { // advice against mutating the grid was originally also reccomended by an LLM
+function cloneGame(game) { // function was completely replaced by chatgpt
+    return {
         ...game,
 
         grid: game.grid.map(column =>
@@ -401,8 +414,10 @@ function endTurn(game) {
 
 function checkWinner(game) {
     const allTiles = game.grid.flat();
-    const redAlive = allTiles.some(tile => isPlayer(tile.occupant) && tile.occupant.team === "red");
-    const blueAlive = allTiles.some(tile => isPlayer(tile.occupant) && tile.occupant.team === "blue");
+    const redAlive = allTiles.some(tile =>
+        isPlayer(tile.occupant) && tile.occupant.team === "red");
+    const blueAlive = allTiles.some(tile =>
+        isPlayer(tile.occupant) && tile.occupant.team === "blue");
 
     if (!redAlive) return "blue";
     if (!blueAlive) return "red";
@@ -419,14 +434,17 @@ function actionMove(game, target) {
     // there is a from tile and a target tile
     const newGame = cloneGame(game);
 
-    const fromTile = getTile(newGame, ...newGame.selected); //the from tile must be the selected tile
-    const targetTile = getTile(newGame, ...target); // the to tile / target tile must be the other tile
+    const fromTile = getTile(newGame, ...newGame.selected); //the from tile
+    // must be the selected tile
+    const targetTile = getTile(newGame, ...target); // the to tile / target tile
+    // must be the other tile
 
     const mover = fromTile.occupant;
 
     // pick up rock if there are rocks to be picked
     if (isRock(targetTile.occupant)) {
-        mover.hasRock = true; // NOTE TO SELF: this is fine, because if mover already has a rock they can't move here!
+        mover.hasRock = true; // NOTE TO SELF: this is fine, because if
+        // mover already has a rock they can't move here!
     }
 
     moveOccupant(fromTile, targetTile);
@@ -445,9 +463,9 @@ function actionDropRock(game, target) {
     mover.hasRock = false;
 
     if (isPlayer(targetTile.occupant)) {
-        //console.log("Splat! this is where a splat sound might play if i have time to work that out");
+        //console.log("Splat!,wav");
     } else {
-        //console.log("Clang! this is where a splat sound might play if i have time to work that out");
+        //console.log("Clang!.wav");
     }
 
     placeRock(targetTile);
@@ -487,7 +505,8 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 * @param {object} game - the gamestate to perform the action on
 * @param {array} target - the coordinates of the tile to perform the action on
 *
-* @returns {object} game - the new gamestate after the action is performed, or unchanged if the action was invalid
+* @returns {object} game - the new gamestate after the action is performed,
+* or unchanged if the action was invalid
 */
 export function performAction(game, target) {
   // no selected tile
@@ -526,7 +545,8 @@ export function performAction(game, target) {
 
   // DROP, WITH NOTHING (CHEESE WITH NOTHING?)
 
-    if (!mover.hasRock && diff < -2) { // exception case to not being able to move or drop rock
+    if (!mover.hasRock && diff < -2) { // exception case to not being able
+        // to move or drop rock
 
         const result = actionSelfSplat(game, target);
         const winner = checkWinner(result);
@@ -543,7 +563,8 @@ export function performAction(game, target) {
   return game;
 }
 
-// (this function is a modified version of some Claude code, and also needs to be credited.)
+// (this function is a modified version of some Claude code,
+// and iis credited in the ai disclosure.)
 /**
 * returns coordinates the current selection could legally act on
 * (walk, drop rock, or self-splat) — for rendering hints only
@@ -565,7 +586,11 @@ export function getValidTargets(game) {
       const validSelfSplat =
         !mover.hasRock && diff < -2 && isAdjacent(game.selected, [x, z]);
 
-      if (!cannotWalkTo(game, [x, z]) || !cannotDropRockTo(game, [x, z]) || validSelfSplat) {
+      if (
+        !cannotWalkTo(game, [x, z]) ||
+        !cannotDropRockTo(game, [x, z]) ||
+        validSelfSplat
+      ) {
         targets.push([x, z]);
       }
     }

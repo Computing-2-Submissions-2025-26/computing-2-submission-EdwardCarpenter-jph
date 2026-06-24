@@ -92,7 +92,7 @@ function render() { // this section wasn't originally written by ai
       redTurnDisplay.textContent = `Red wins!`;
       blueTurnDisplay.textContent = ``;
     } else {
-      blueTurnDisplay.textContent = `Blue wins!`
+      blueTurnDisplay.textContent = `Blue wins!`;
       redTurnDisplay.textContent = ``;
     }
 
@@ -101,7 +101,7 @@ function render() { // this section wasn't originally written by ai
       redTurnDisplay.textContent =`Current turn: RED`;
       blueTurnDisplay.textContent =``;
     } else {
-      blueTurnDisplay.textContent=`Current turn:BLUE`
+      blueTurnDisplay.textContent=`Current turn:BLUE`;
       redTurnDisplay.textContent =``;
     }
   }
@@ -232,11 +232,12 @@ function renderTopTile(tile, x, z, row) {
   const div = document.createElement("button");
 
   div.classList.add("tile");
-  
+
   const isValidTarget = validTargets.some(([vx, vz]) => vx === x && vz === z);
 
-  div.classList.toggle("valid-target", isValidTarget); // accessibility helper for tritanopic and achromatopic users
-  
+  div.classList.toggle("valid-target", isValidTarget); // accessibility helper
+  // for tritanopic and achromatopic users
+
   div.style.gridColumn = x + 1;
   div.style.gridRow = row + 1;
 
@@ -431,9 +432,12 @@ function handleTileClick(x, z) {
     game.selected && x === selected.x && z === selected.z;
 
   if (clickedSelectedTile && isLastGoon(game)) {
-    // this is more game logic adjacent than may be preferable, but it's a UX issue that was simpler to fix on this end
-    // i initially had deselecting impossible as a deliberate part of the game, since it led to humerous game situations,
-    // however, many users including my peer reviewer simply found it irritating, so i replaced it.
+    // this is more game logic adjacent than may be preferable, but it's a UX
+    // issue that was simpler to fix on this end
+    // i initially had deselecting impossible as a deliberate part of the game,
+    // since it led to humerous game situations,
+    // however, many users including my peer reviewer simply found it
+    // irritating, so i replaced it.
     game = performAction(game, [x, z]);
   } else if (game.selected && (clickedOwnCharacter || clickedSelectedTile)) {
     game = selectTile(game, x, z);
