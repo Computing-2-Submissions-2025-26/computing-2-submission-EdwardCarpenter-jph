@@ -2,6 +2,14 @@
 
 A turn-based game based around dropping 10 ton weights on rival gangsters. Details on how to play are included in the web app itself.
 
+### Note for Examiner
+
+This web-app functions fully on my laptop, and my peer reviewer also had no issues viewing the game-board when playtesting; however, when testing with a third device I could not see the gameboard in the web-app.
+
+It seems likely to me that this is due to an issue with how I was opening the app, rather than with the web-app itself, and this won't be a problem on your end. However, as a backup I have attatched an mp4 screen recording demonstrating the functioning webpage:
+
+https://file.garden/adL34C2aS3ylDLdd/Imperial%20Transfers/DemoVideo%20(1).mp4
+
 ### Installation
 
 The files in this project include: 
@@ -29,4 +37,5 @@ Limited and judicious use has been made of AI models in developing this web app:
 **Google's Gemini Flash** was also used to rewrite limited sections of code in main and game.js (signposted in comments: createEmptyGrid) as well as check default.css for best practice.
 
 Towards the end of the development process, **Claude's Sonnet 4.6** was used to improve fuctional purity.
+
 
