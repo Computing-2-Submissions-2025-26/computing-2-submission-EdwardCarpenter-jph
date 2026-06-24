@@ -82,8 +82,7 @@ const isLastGoon = Object.freeze(function isLastGoon(game) {
   ).length;
 
   return count <= 1;
-}); // this function was rewritten by VSCode's built-in AI to resolve
-// a
+}); // function was rewritten by VScode's AI assistant, to resolve a minor lint.
 
 export { isLastGoon };
 
