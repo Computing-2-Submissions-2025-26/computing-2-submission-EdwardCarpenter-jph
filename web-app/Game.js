@@ -83,7 +83,7 @@ const isLastGoon = Object.freeze(function isLastGoon(game) {
 
   return count <= 1;
 }); // this function was rewritten by VSCode's built-in AI to resolve
-// a linter error.
+// a
 
 export { isLastGoon };
 
@@ -109,6 +109,23 @@ function isPlayer(occupant) {
 function isRock(occupant) {
     return occupant && occupant.type === "rock";
 }
+
+function removeOccupant(tile) { // this is something suggested by chatgpt.
+  tile.occupant = null; // allows for removing an occupant
+  // without mutating the array
+} // note: also removes rocks! don't forget that
+
+function placeRock(tile) {
+    tile.occupant = {
+        type: "rock"
+  };
+}
+
+function moveOccupant(fromTile, toTile) {
+  toTile.occupant = fromTile.occupant;
+  fromTile.occupant = null;
+}
+
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         grid generation
@@ -357,8 +374,24 @@ function cannotDropRockTo(game, target) {
 
 
 /*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    grid helpers (pure, immutable)
+    rock drop validation
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
+function cloneGame(game) { // function was completely replaced by chatgpt
+    return {
+        ...game,
+
+        grid: game.grid.map(column =>
+            column.map(tile => ({
+                ...tile,
+
+                occupant: tile.occupant
+                    ? {...tile.occupant}
+                    : null
+            }))
+        )
+    };
+}
 
 // this function came from Claude, Sonnet 4.6, and must be credited
 function withTile(grid, x, z, changes) {
@@ -398,32 +431,36 @@ function checkWinner(game) {
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
 
 function actionMove(game, target) {
-    const fromTile = getTile(game, ...game.selected);
-    const targetTile = getTile(game, ...target);
+    // there is a from tile and a target tile
+    const newGame = cloneGame(game);
 
-    const pickedUpRock = isRock(targetTile.occupant);
+    const fromTile = getTile(newGame, ...newGame.selected); //the from tile
+    // must be the selected tile
+    const targetTile = getTile(newGame, ...target); // the to tile / target tile
+    // must be the other tile
 
-    const mover = {
-        ...fromTile.occupant,
-        // NOTE TO SELF: this is fine, because if mover already has a
-        // rock they can't move here!
-        hasRock: fromTile.occupant.hasRock || pickedUpRock
-    };
+    const mover = fromTile.occupant;
 
-    const grid = withTile(
-        withTile(game.grid, ...game.selected, { occupant: null }),
-        ...target,
-        { occupant: mover }
-    );
+    // pick up rock if there are rocks to be picked
+    if (isRock(targetTile.occupant)) {
+        mover.hasRock = true; // NOTE TO SELF: this is fine, because if
+        // mover already has a rock they can't move here!
+    }
 
-    return endTurn({ ...game, grid });
+    moveOccupant(fromTile, targetTile);
+    return endTurn(newGame);
 }
 
 function actionDropRock(game, target) {
-    const fromTile = getTile(game, ...game.selected);
-    const targetTile = getTile(game, ...target);
 
-    const mover = { ...fromTile.occupant, hasRock: false };
+    const newGame = cloneGame(game);
+
+    const fromTile = getTile(newGame, ...newGame.selected);
+    const targetTile = getTile(newGame, ...target);
+
+    const mover = fromTile.occupant;
+
+    mover.hasRock = false;
 
     if (isPlayer(targetTile.occupant)) {
         //console.log("Splat!,wav");
@@ -431,34 +468,30 @@ function actionDropRock(game, target) {
         //console.log("Clang!.wav");
     }
 
-    const grid = withTile(
-        withTile(game.grid, ...game.selected, { occupant: mover }),
-        ...target,
-        { occupant: { type: "rock" } }
-    );
-
-    return endTurn({ ...game, grid });
+    placeRock(targetTile);
+    return endTurn(newGame);
 }
 
 function actionSelfSplat(game, target) {
     // if this is annoying me i will simply remove it
     // likely to be buggy for no reason.
-    const fromTile = getTile(game, ...game.selected);
-    const targetTile = getTile(game, ...target);
+    const newGame = cloneGame(game);
 
-    // if another character is below, splat them too,
-    // and they break your fall
-    const grid = targetTile.occupant
-        ? withTile(
-            withTile(game.grid, ...game.selected, { occupant: null }),
-            ...target,
-            { occupant: fromTile.occupant }
-        )
-        : withTile(game.grid, ...game.selected, { occupant: null });
+    const fromTile = getTile(newGame, ...newGame.selected);
+    const targetTile = getTile(newGame, ...target);
 
-    //console.log("Self splat! cue Splat sound effect again");
+    // if another character is below, splat them too
+    if (targetTile.occupant) {
+        // splat other character and they break your fall
+        removeOccupant(targetTile)
+        moveOccupant(fromTile,targetTile);
+    } else {
+        removeOccupant(fromTile);
+    }
 
-    return endTurn({ ...game, grid });
+  //console.log("Self splat! cue Splat sound effect again");
+
+  return endTurn(newGame);
 }
 
 
@@ -495,18 +528,20 @@ export function performAction(game, target) {
     if (!cannotWalkTo(game, target)) {
         const result = actionMove(game, target);
         const winner = checkWinner(result);
-        //console.log(result)
-        return winner ? { ...result, winner } : result;
-    }
+
+        if (winner) {result.winner = winner;}
+    //console.log(result)
+    return result;}
 
     // DROP ROCK
 
     if (!cannotDropRockTo(game, target)) {
         const result = actionDropRock(game, target);
         const winner = checkWinner(result);
-        //console.log(result)
-        return winner ? { ...result, winner } : result;
-    }
+
+        if (winner) {result.winner = winner;}
+    //console.log(result)
+    return result;}
 
   // DROP, WITH NOTHING (CHEESE WITH NOTHING?)
 
@@ -515,9 +550,12 @@ export function performAction(game, target) {
 
         const result = actionSelfSplat(game, target);
         const winner = checkWinner(result);
+
+        if (winner) {
+            result.winner = winner;}
+
         //console.log(result)
-        return winner ? { ...result, winner } : result;
-    }
+        return result;}
 
   // invalid action
   //console.log(game)
