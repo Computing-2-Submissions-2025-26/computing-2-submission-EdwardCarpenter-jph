@@ -83,7 +83,7 @@ const isLastGoon = Object.freeze(function isLastGoon(game) {
 
   return count <= 1;
 }); // this function was rewritten by VSCode's built-in AI to resolve
-// a linter error.
+// a linter
 
 export { isLastGoon };
 
