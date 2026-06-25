@@ -37,9 +37,6 @@ h1 {
   text-align: center;
 }
 
-/* board-wrapper is the positioning context shared by #board and #ui,
-   so #ui always sits in the board's corner regardless of viewport size
-   or how tall the responsive title image renders above it. */
 #board-wrapper {
   position: relative;
   width: max-content;

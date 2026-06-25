@@ -41,6 +41,6 @@ Limited and judicious use has been made of AI models in developing this web app:
 
 **Google's Gemini Flash** was also used to rewrite limited sections of code in main and game.js (signposted in comments: createEmptyGrid) as well as check default.css for best practice.
 
-Towards the end of the development process, **Claude's Sonnet 4.6** was used to improve fuctional purity.
+Towards the end of the development process, **Claude's Sonnet 4.6** was used in making sure the web-app worked across devices and browsers.
 
 
