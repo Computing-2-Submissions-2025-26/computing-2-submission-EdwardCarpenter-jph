@@ -7,7 +7,7 @@ import {
   getWinner,
   getValidTargets,
   isLastGoon
-} from "./game.js";
+} from "./Game.js";
 
 const boardElement = document.getElementById("board");
 const redTurnDisplay = document.getElementById("red-turn-display");
@@ -28,7 +28,7 @@ const ALL_SPRITES = [
 
 ALL_SPRITES.forEach((src) => {
   const img = new Image();
-  img.src = `./assets/tile/${src}`;
+  img.src = `./assets/Tile/${src}`;
 });
 
 /*
@@ -80,7 +80,7 @@ function render() { // this section wasn't originally written by ai
   backgroundFog.id = "background-fog";
 
   backgroundFog.src =
-    "./assets/tile/BackFog.png";
+    "./assets/Tile/BackFog.png";
 
   boardElement.appendChild(backgroundFog);
 
@@ -220,7 +220,7 @@ function createSprite(src) {
   const img = document.createElement("img");
 
   img.classList.add("tile-sprite");
-  img.src = `./assets/tile/${src}`;
+  img.src = `./assets/Tile/${src}`;
 
   img.alt = "";
 
