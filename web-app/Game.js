@@ -392,7 +392,12 @@ function cloneGame(game) { // function was completely replaced by chatgpt
     };
 }
 
-// this function came from Claude, Sonnet 4.6, and must be credited
+/* this function came from Claude, Sonnet 4.6; 
+my actionMove, actionDropRock and actionSelfSplat are not strictly pure,
+And I initially intended to use this to make them more pure.
+However, i decided not to make major logic changes so close to the deadline
+Since I'd rather submit a working game with flawed purity than a potentially broken one.
+ The function remains here to give some idea of how I *might* have improved purity. */
 function withTile(grid, x, z, changes) {
   return grid.map((column, cx) =>
     cx === x
