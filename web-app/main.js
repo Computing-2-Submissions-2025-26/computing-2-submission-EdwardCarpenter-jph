@@ -71,7 +71,7 @@ resetButton.addEventListener("click", () => {
 render();
 
 
-function render() { // this section wasn't originally written by ai
+function render() { // this section was heavily edited by gemini flash
   validTargets = getValidTargets(game);
   boardElement.innerHTML = "";
 

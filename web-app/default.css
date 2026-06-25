@@ -1,4 +1,4 @@
-/* note: this css has been cleaned up by gemini, since i had a lot of duplicates. i should check on it myself */
+/* note: this css has been cleaned up by gemini, since i had a lot of duplicates. */
 
 /* --- Fonts (Local Fallback for Offline Marking) --- */
 @font-face {
@@ -37,14 +37,23 @@ h1 {
   text-align: center;
 }
 
+/* board-wrapper is the positioning context shared by #board and #ui,
+   so #ui always sits in the board's corner regardless of viewport size
+   or how tall the responsive title image renders above it. */
+#board-wrapper {
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+}
+
 #ui {
   position: absolute;
-  top: 390px;
-  left: 130px;
+  top: 8px;
+  left: 12px;
   z-index: 25;
 
   font-size: 30px;
-  
+
   text-align: left;
   margin-bottom: -10px;
 }
@@ -82,12 +91,9 @@ h1 {
 
 /* gameboard and game bits */
 #board {
-  position: relative;
   display: grid;
   grid-template-columns: repeat(12, 110px);
   grid-template-rows: repeat(12, 56px);
-  width: max-content;
-  margin: 0 auto;
   background: #111;
 }
 
