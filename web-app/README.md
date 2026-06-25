@@ -6,7 +6,7 @@ A turn-based game based around dropping 10 ton weights on rival gangsters. Detai
 
 This web-app functions fully on my laptop, and my peer reviewer also had no issues viewing the game-board when playtesting; however, when testing with a third device I could not see the gameboard in the web-app.
 
-It seems likely to me that this is due to an issue with how I was opening the app, rather than with the web-app itself, and this won't be a problem on your end. However, as a backup I have attatched an mp4 screen recording demonstrating the functioning webpage:
+It seems likely to me that this is due to an issue with how I was opening the app, rather than with the web-app itself, and this shouldn't be a problem on your end. However, as a backup I have attatched an mp4 screen recording demonstrating the functioning webpage:
 
 https://file.garden/adL34C2aS3ylDLdd/Imperial%20Transfers/DownTown%20-%20Gameplay%20Demonstration.mp4
 
