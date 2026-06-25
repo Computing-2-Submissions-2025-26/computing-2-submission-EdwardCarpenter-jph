@@ -528,9 +528,8 @@ export function performAction(game, target) {
         const result = actionMove(game, target);
         const winner = checkWinner(result);
 
-        if (winner) {result.winner = winner;}
-    //console.log(result)
-    return result;}
+        return winner ? { ...result, winner } : result;
+    }
 
     // DROP ROCK
 
@@ -538,9 +537,8 @@ export function performAction(game, target) {
         const result = actionDropRock(game, target);
         const winner = checkWinner(result);
 
-        if (winner) {result.winner = winner;}
-    //console.log(result)
-    return result;}
+        return winner ? { ...result, winner } : result;
+    }
 
   // DROP, WITH NOTHING (CHEESE WITH NOTHING?)
 
@@ -550,11 +548,8 @@ export function performAction(game, target) {
         const result = actionSelfSplat(game, target);
         const winner = checkWinner(result);
 
-        if (winner) {
-            result.winner = winner;}
-
-        //console.log(result)
-        return result;}
+        return winner ? { ...result, winner } : result;
+    }
 
   // invalid action
   //console.log(game)
